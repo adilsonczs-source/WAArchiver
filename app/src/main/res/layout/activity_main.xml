@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  activity_main.xml — Tela principal do WhatsApp Archiver
+  Localização: app/src/main/res/layout/activity_main.xml
+
+  Estrutura:
+  ┌─────────────────────────────────┐
+  │  Header verde (status serviços) │
+  │  Cards de status (notif + acess)│
+  │  Lista de números monitorados   │
+  │  Botões de ação                 │
+  │  Histórico de PDFs gerados      │
+  └─────────────────────────────────┘
+-->
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_main"
+    tools:context=".MainActivity">
+
+    <!-- ══ AppBar com CollapsingToolbar ══ -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/green_wa"
+        app:elevation="0dp">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/green_wa"
+            app:title="WhatsApp Archiver"
+            app:titleTextColor="@android:color/white"
+            app:subtitle="Arquivamento automático"
+            app:subtitleTextColor="#AAFFFFFF"
+            app:menu="@menu/main_menu"/>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- ══ Conteúdo rolável ══ -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:fillViewport="true"
+        android:padding="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:paddingBottom="88dp">
+
+            <!-- ══ Card Status dos Serviços ══ -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <!-- Título do card -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Status do Monitoramento"
+                        android:textSize="13sp"
+                        android:textColor="@color/text_muted"
+                        android:textAllCaps="true"
+                        android:letterSpacing="0.08"
+                        android:layout_marginBottom="12dp"/>
+
+                    <!-- Resumo do status (emoji + texto) -->
+                    <TextView
+                        android:id="@+id/tvStatusSummary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary"
+                        android:layout_marginBottom="16dp"
+                        tools:text="✅ Monitoramento ativo"/>
+
+                    <!-- Linha: Notification Listener -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:background="@drawable/bg_status_row"
+                        android:layout_marginBottom="8dp"
+                        android:paddingHorizontal="12dp">
+
+                        <ImageView
+                            android:id="@+id/statusNotification"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_warning_red"
+                            android:contentDescription="Status notificações"/>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_marginStart="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Listener de Notificações"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/text_primary"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Detecta mensagens recebidas"
+                                android:textSize="11sp"
+                                android:textColor="@color/text_muted"/>
+                        </LinearLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnNotifSettings"
+                            android:layout_width="wrap_content"
+                            android:layout_height="32dp"
+                            android:text="Ativar"
+                            android:textSize="11sp"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            app:strokeColor="@color/green_wa"
+                            android:textColor="@color/green_wa"/>
+                    </LinearLayout>
+
+                    <!-- Linha: Accessibility Service -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:background="@drawable/bg_status_row"
+                        android:paddingHorizontal="12dp">
+
+                        <ImageView
+                            android:id="@+id/statusAccessibility"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_warning_red"
+                            android:contentDescription="Status acessibilidade"/>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_marginStart="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Serviço de Acessibilidade"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/text_primary"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Captura mensagens visíveis"
+                                android:textSize="11sp"
+                                android:textColor="@color/text_muted"/>
+                        </LinearLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnAccessibilitySettings"
+                            android:layout_width="wrap_content"
+                            android:layout_height="32dp"
+                            android:text="Ativar"
+                            android:textSize="11sp"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            app:strokeColor="@color/green_wa"
+                            android:textColor="@color/green_wa"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ══ Card: Números Monitorados ══ -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <!-- Header da seção -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Números Monitorados"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_primary"/>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnAddPhone"
+                            android:layout_width="wrap_content"
+                            android:layout_height="36dp"
+                            android:text="+ Adicionar"
+                            android:textSize="12sp"
+                            app:backgroundTint="@color/green_wa"/>
+                    </LinearLayout>
+
+                    <!-- Estado vazio -->
+                    <TextView
+                        android:id="@+id/tvEmptyPhones"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Nenhum número cadastrado.\nToque em '+ Adicionar' para começar."
+                        android:gravity="center"
+                        android:textColor="@color/text_muted"
+                        android:textSize="13sp"
+                        android:padding="24dp"
+                        android:visibility="visible"/>
+
+                    <!-- Lista de números (RecyclerView) -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvPhones"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
+                        tools:itemCount="3"
+                        tools:listitem="@layout/item_monitored_phone"/>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ══ Botões de Ação ══ -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp"
+                android:weightSum="2">
+
+                <!-- Processar agora -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnProcessNow"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:text="⚡ Processar agora"
+                    android:textSize="13sp"
+                    app:backgroundTint="@color/green_wa"
+                    app:icon="@drawable/ic_sync"
+                    app:iconSize="18dp"/>
+
+                <!-- Aviso privacidade -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPrivacyInfo"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:text="🔒 Privacidade"
+                    android:textSize="13sp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    app:strokeColor="@color/green_light"
+                    android:textColor="@color/green_wa"/>
+            </LinearLayout>
+
+            <!-- ══ Card: Histórico de PDFs ══ -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <!-- Header -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="PDFs Gerados"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_primary"/>
+
+                        <!-- Botão para ir para Estatísticas -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnViewStats"
+                            android:layout_width="wrap_content"
+                            android:layout_height="36dp"
+                            android:text="📊 Gráficos"
+                            android:textSize="12sp"
+                            style="@style/Widget.MaterialComponents.Button.TextButton"
+                            android:textColor="@color/green_wa"/>
+                    </LinearLayout>
+
+                    <!-- Estado vazio -->
+                    <TextView
+                        android:id="@+id/tvEmptyPdfs"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Nenhum PDF gerado ainda."
+                        android:gravity="center"
+                        android:textColor="@color/text_muted"
+                        android:textSize="13sp"
+                        android:padding="20dp"
+                        android:visibility="visible"/>
+
+                    <!-- Lista de PDFs -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvPdfHistory"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
+                        tools:itemCount="5"
+                        tools:listitem="@layout/item_pdf_history"/>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- ══ FAB para adicionar número (alternativo) ══ -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_add"
+        android:contentDescription="Adicionar número"
+        app:backgroundTint="@color/green_wa"
+        app:tint="@android:color/white"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

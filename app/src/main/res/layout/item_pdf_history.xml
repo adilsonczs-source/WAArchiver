@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  item_pdf_history.xml — Item da lista de PDFs gerados
+  Localização: app/src/main/res/layout/item_pdf_history.xml
+-->
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="1dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="@color/border">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="12dp">
+
+        <!-- Ícone PDF -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_pdf"
+            android:padding="8dp"
+            app:backgroundTint="#FFEBEE"
+            app:shapeAppearanceOverlay="@style/Circle"
+            app:tint="#D32F2F"/>
+
+        <!-- Info do PDF -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginStart="12dp">
+
+            <TextView
+                android:id="@+id/tvPdfLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                tools:text="João Silva"/>
+
+            <TextView
+                android:id="@+id/tvPdfFilename"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:textColor="@color/text_muted"
+                android:fontFamily="monospace"
+                android:ellipsize="middle"
+                android:maxLines="1"
+                tools:text="WhatsApp_+5565999_2026-05-14.pdf"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="2dp">
+
+                <TextView
+                    android:id="@+id/tvPdfDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="11sp"
+                    android:textColor="@color/green_wa"
+                    tools:text="14/05/2026 14:32"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" · "
+                    android:textSize="11sp"
+                    android:textColor="@color/text_muted"/>
+
+                <TextView
+                    android:id="@+id/tvPdfMsgCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="11sp"
+                    android:textColor="@color/text_muted"
+                    tools:text="42 msgs"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Botões abrir / compartilhar -->
+        <ImageButton
+            android:id="@+id/btnOpenPdf"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_open"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Abrir PDF"
+            app:tint="@color/green_wa"/>
+
+        <ImageButton
+            android:id="@+id/btnSharePdf"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_share"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Compartilhar PDF"
+            app:tint="@color/text_muted"
+            android:layout_marginStart="4dp"/>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
