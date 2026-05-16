@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <style name="Theme.WAArchiver" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <item name="colorPrimary">#25D366</item>
-        <item name="colorPrimaryVariant">#1B5E20</item>
-        <item name="colorOnPrimary">#FFFFFF</item>
-    </style>
-</resources>
