@@ -1,0 +1,1898 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>OJ · Mandados IA</title>
+<meta name="theme-color" content="#052e16">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+<style>
+:root {
+  /* ── Verde Moderno (estilo Cash App / Robinhood / Nubank verde) ── */
+  --G900: #052e16; --G800: #14532d; --G700: #15803d;
+  --G600: #16a34a; --G500: #22c55e; --G400: #4ade80;
+  --G300: #86efac; --G100: #dcfce7; --G50:  #f0fdf4;
+
+  --bg:      #050c0a;
+  --surf:    #0a1510;
+  --surf2:   #0f1e14;
+  --surf3:   #142518;
+  --border:  #1a3320;
+  --border2: #1f3d26;
+
+  --acc:     var(--G500);       /* #22c55e principal */
+  --acc-d:   rgba(34,197,94,.12);
+  --acc-glow:rgba(34,197,94,.25);
+
+  --red:     #f87171; --red-d:   rgba(248,113,113,.12);
+  --amber:   #fbbf24; --amber-d: rgba(251,191,36,.12);
+  --blue:    #60a5fa; --blue-d:  rgba(96,165,250,.12);
+  --purple:  #a78bfa; --purple-d:rgba(167,139,250,.12);
+
+  --text:    #f0fdf4;
+  --text2:   #86efac;
+  --muted:   #4d7a5a;
+  --muted2:  #2d5a3d;
+
+  --font:    'Inter', system-ui, sans-serif;
+  --mono:    'JetBrains Mono', monospace;
+  --topbar:  58px;
+  --nav:     66px;
+  --r:       14px;
+  --r-sm:    8px;
+  --r-xs:    5px;
+  --sh:      0 4px 24px rgba(0,0,0,.5);
+  --sh-g:    0 0 20px rgba(34,197,94,.2);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px}
+::-webkit-scrollbar{width:2px}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+button{font-family:var(--font);cursor:pointer;border:none;background:none}
+input,textarea,select{font-family:var(--font)}
+
+/* ══ TOPBAR ══ */
+#topbar{
+  position:fixed;top:0;left:0;right:0;height:var(--topbar);
+  background:linear-gradient(135deg,var(--G900) 0%,#071a0d 100%);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 14px 0 16px;z-index:100;
+  padding-top:env(safe-area-inset-top,0);
+}
+.tb-left{display:flex;align-items:center;gap:10px}
+.tb-logo{
+  width:34px;height:34px;border-radius:10px;
+  background:linear-gradient(135deg,var(--G500),var(--G700));
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;color:#fff;font-weight:800;
+  box-shadow:0 2px 12px rgba(34,197,94,.35);
+}
+.tb-title{font-size:16px;font-weight:800;color:var(--text);letter-spacing:-.4px}
+.tb-right{display:flex;align-items:center;gap:6px}
+.tb-btn{
+  width:36px;height:36px;border-radius:var(--r-sm);
+  border:1px solid var(--border2);color:var(--text2);
+  display:flex;align-items:center;justify-content:center;font-size:15px;
+  transition:all .2s;background:var(--surf2);
+}
+.tb-btn:active{background:var(--surf3);color:var(--acc);border-color:var(--acc)}
+
+/* ══ BOTTOM NAV ══ */
+#bottomnav{
+  position:fixed;bottom:0;left:0;right:0;height:var(--nav);
+  background:var(--surf);border-top:1px solid var(--border);
+  display:flex;z-index:100;
+  padding-bottom:env(safe-area-inset-bottom,0);
+}
+.nav-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;color:var(--muted);font-size:9px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.5px;transition:all .2s;position:relative;overflow:hidden;
+}
+.nav-btn i{font-size:20px;transition:transform .2s,color .2s}
+.nav-btn::after{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:0;height:2px;background:var(--acc);
+  border-radius:0 0 3px 3px;transition:width .25s cubic-bezier(.34,1.56,.64,1);
+}
+.nav-btn.active{color:var(--acc)}
+.nav-btn.active::after{width:32px}
+.nav-btn.active i{transform:translateY(-2px);color:var(--acc)}
+
+/* ══ VIEWS ══ */
+#app{position:fixed;top:var(--topbar);bottom:var(--nav);left:0;right:0;overflow:hidden}
+.view{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;display:none;opacity:0}
+.view.active{display:block;animation:viewIn .22s ease forwards}
+@keyframes viewIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.view-pad{padding:14px;padding-bottom:24px}
+
+/* ══ STATS ══ */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}
+.stat-chip{
+  background:var(--surf2);border:1px solid var(--border);
+  border-radius:var(--r);padding:12px 8px;text-align:center;
+  position:relative;overflow:hidden;
+}
+.stat-chip::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--chip-c,var(--acc));opacity:.6;
+}
+.sc-val{font-size:24px;font-weight:800;line-height:1;font-family:var(--mono)}
+.sc-lbl{font-size:9px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.sc-g  {--chip-c:var(--G500)} .sc-g  .sc-val{color:var(--G400)}
+.sc-a  {--chip-c:var(--amber)}.sc-a  .sc-val{color:var(--amber)}
+.sc-ok {--chip-c:var(--G500)} .sc-ok .sc-val{color:var(--G300)}
+.sc-p  {--chip-c:var(--purple)}.sc-p .sc-val{color:var(--purple)}
+
+/* ══ CARDS ══ */
+.card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px}
+.card-hd{padding:10px 14px;background:var(--surf2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.card-hd-icon{width:30px;height:30px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.card-hd-title{font-size:12px;font-weight:700;color:var(--text)}
+.card-hd-sub{font-size:10px;color:var(--muted);margin-top:1px}
+.card-body{padding:12px 14px}
+
+/* ══ MAND ITEM ══ */
+.mand-list{display:flex;flex-direction:column;gap:8px}
+.mand-item{
+  background:var(--surf);border:1px solid var(--border);
+  border-left:3px solid var(--border2);
+  border-radius:var(--r);padding:13px;cursor:pointer;
+  transition:background .12s,transform .12s;
+  position:relative;overflow:hidden;
+}
+.mand-item::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,rgba(34,197,94,.04),transparent);
+  opacity:0;transition:opacity .2s;
+}
+.mand-item:active{transform:scale(.985)}
+.mand-item:active::after{opacity:1}
+.mand-item.ei-el  {border-left-color:var(--acc)}
+.mand-item.ei-pr  {border-left-color:var(--amber)}
+.mand-item.ei-ok  {border-left-color:var(--G400);opacity:.8}
+.mand-item.ei-neg {border-left-color:var(--red)}
+.mi-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:5px}
+.mi-nome{font-size:13px;font-weight:700;color:var(--text);line-height:1.3;flex:1}
+.mi-badges{display:flex;flex-direction:column;gap:3px;align-items:flex-end;flex-shrink:0}
+.mi-proc{font-size:10px;color:var(--muted);font-family:var(--mono)}
+.mi-end{font-size:11px;color:var(--text2);margin-top:3px;display:flex;align-items:center;gap:4px}
+.mi-end i{font-size:9px;color:var(--muted)}
+
+/* ══ PILLS ══ */
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:700;padding:2px 8px;border-radius:99px;white-space:nowrap;letter-spacing:.3px}
+.pill-g   {background:rgba(34,197,94,.15);  color:var(--G400); border:1px solid rgba(34,197,94,.3)}
+.pill-a   {background:var(--amber-d);       color:var(--amber);border:1px solid rgba(251,191,36,.3)}
+.pill-r   {background:var(--red-d);         color:var(--red);  border:1px solid rgba(248,113,113,.3)}
+.pill-p   {background:var(--purple-d);      color:var(--purple);border:1px solid rgba(167,139,250,.3)}
+.pill-b   {background:var(--blue-d);        color:var(--blue); border:1px solid rgba(96,165,250,.3)}
+.pill-gr  {background:var(--surf3);         color:var(--text2);border:1px solid var(--border2)}
+
+/* ══ INPUTS ══ */
+.inp{
+  width:100%;background:var(--surf2);border:1px solid var(--border2);
+  border-radius:var(--r-sm);color:var(--text);padding:10px 12px;
+  font-size:13px;transition:border-color .15s,box-shadow .15s;outline:none;
+}
+.inp:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(34,197,94,.12)}
+.inp::placeholder{color:var(--muted)}
+textarea.inp{resize:none;line-height:1.6}
+.inp-label{font-size:11px;font-weight:600;color:var(--text2);margin-bottom:5px;display:flex;align-items:center;gap:5px}
+.inp-group{margin-bottom:12px}
+.inp-row{display:grid;gap:10px}
+.inp-row.c2{grid-template-columns:1fr 1fr}
+
+/* ══ BOTÕES ══ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:11px 18px;border-radius:var(--r-sm);font-size:13px;font-weight:600;
+  cursor:pointer;transition:all .15s;border:1px solid transparent;white-space:nowrap;
+}
+.btn-primary{background:linear-gradient(135deg,var(--G500),var(--G700));color:#fff;border:none;box-shadow:0 2px 12px rgba(34,197,94,.3)}
+.btn-primary:active{opacity:.85;transform:scale(.98)}
+.btn-ghost{background:transparent;color:var(--text2);border-color:var(--border2)}
+.btn-ghost:active{background:var(--surf3)}
+.btn-g   {background:rgba(34,197,94,.12); color:var(--G400); border-color:rgba(34,197,94,.3)}
+.btn-a   {background:var(--amber-d);      color:var(--amber);border-color:rgba(251,191,36,.3)}
+.btn-r   {background:var(--red-d);        color:var(--red);  border-color:rgba(248,113,113,.3)}
+.btn-p   {background:var(--purple-d);     color:var(--purple);border-color:rgba(167,139,250,.3)}
+.btn-b   {background:var(--blue-d);       color:var(--blue); border-color:rgba(96,165,250,.3)}
+.btn-sm{padding:7px 13px;font-size:11px}
+.btn-full{width:100%}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ══ ABAS ANIMADAS ══ */
+.tabs-wrap{position:relative;margin-bottom:16px}
+.tabs{
+  display:flex;background:var(--surf2);border-radius:var(--r);
+  padding:4px;gap:2px;overflow-x:auto;scrollbar-width:none;
+}
+.tabs::-webkit-scrollbar{display:none}
+.tab-btn{
+  flex:1;padding:8px 10px;border-radius:var(--r-sm);
+  font-size:11px;font-weight:600;color:var(--muted);
+  white-space:nowrap;transition:color .2s;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+  position:relative;z-index:1;
+}
+.tab-btn i{font-size:13px}
+.tab-btn.active{color:var(--G900);font-weight:700}
+.tab-slider{
+  position:absolute;top:4px;left:4px;height:calc(100% - 8px);
+  background:linear-gradient(135deg,var(--G400),var(--G500));
+  border-radius:var(--r-sm);z-index:0;
+  transition:left .25s cubic-bezier(.34,1.2,.64,1),width .25s cubic-bezier(.34,1.2,.64,1);
+  box-shadow:0 2px 8px rgba(34,197,94,.3);
+}
+.tab-pane{display:none;animation:tabIn .2s ease}
+.tab-pane.active{display:block}
+@keyframes tabIn{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
+
+/* ══ MODAL ══ */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.7);
+  z-index:200;display:none;align-items:flex-end;
+  backdrop-filter:blur(6px);
+}
+.modal-overlay.open{display:flex;animation:fadeO .2s}
+@keyframes fadeO{from{opacity:0}to{opacity:1}}
+.modal-sheet{
+  width:100%;max-width:600px;margin:0 auto;
+  background:var(--surf);
+  border-top:1px solid var(--border);
+  border-radius:20px 20px 0 0;
+  max-height:93vh;display:flex;flex-direction:column;
+  animation:slideUp .28s cubic-bezier(.32,.72,0,1);
+  padding-bottom:env(safe-area-inset-bottom,0);
+}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:36px;height:4px;background:var(--border2);border-radius:99px;margin:10px auto 6px;flex-shrink:0}
+.modal-hdr{padding:8px 16px 12px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;gap:10px}
+.modal-title{font-size:16px;font-weight:800;color:var(--text);flex:1;letter-spacing:-.3px}
+.modal-close{width:30px;height:30px;border-radius:var(--r-sm);background:var(--surf3);color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:13px;border:1px solid var(--border2)}
+.modal-body{flex:1;overflow-y:auto;padding:14px 16px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.modal-footer{padding:12px 16px;border-top:1px solid var(--border);flex-shrink:0}
+
+/* ══ FLUXO VISUAL 4 ETAPAS ══ */
+.fluxo-wrap{
+  background:var(--surf2);border:1px solid var(--border);
+  border-radius:var(--r);padding:14px 10px 10px;margin-bottom:4px;
+  position:relative;overflow:hidden;
+}
+.fluxo-bar-bg{height:3px;background:var(--border);border-radius:99px;margin-bottom:14px;overflow:hidden}
+.fluxo-bar-fill{height:100%;background:linear-gradient(90deg,var(--G500),var(--G400));border-radius:99px;transition:width .5s cubic-bezier(.34,1.2,.64,1)}
+.fluxo-row{display:flex;align-items:flex-start;justify-content:space-between}
+.fluxo-step{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;cursor:pointer}
+.fluxo-step:active .fs-circle{transform:scale(.9)}
+.fs-circle{
+  width:44px;height:44px;border-radius:50%;
+  border:2px solid var(--border2);background:var(--surf);
+  display:flex;align-items:center;justify-content:center;font-size:17px;
+  transition:all .25s cubic-bezier(.34,1.56,.64,1);position:relative;
+}
+.fluxo-step.fs-done .fs-circle{border-color:var(--G500);background:rgba(34,197,94,.15);color:var(--G400);box-shadow:0 0 0 4px rgba(34,197,94,.1)}
+.fluxo-step.fs-active .fs-circle{border-color:var(--amber);background:var(--amber-d);color:var(--amber);animation:fsGlow 2s ease-in-out infinite}
+.fluxo-step.fs-pend .fs-circle{opacity:.4;color:var(--muted)}
+.fluxo-step.fs-final .fs-circle{border-color:var(--G400);background:linear-gradient(135deg,var(--G500),var(--G700));color:#fff;box-shadow:0 0 16px rgba(34,197,94,.4)}
+@keyframes fsGlow{0%,100%{box-shadow:0 0 0 4px rgba(251,191,36,.15)}50%{box-shadow:0 0 0 10px rgba(251,191,36,0)}}
+.fs-tick{position:absolute;bottom:-2px;right:-2px;width:14px;height:14px;border-radius:50%;background:var(--G500);color:#fff;font-size:7px;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--surf2);animation:tickPop .25s cubic-bezier(.34,1.56,.64,1)}
+@keyframes tickPop{from{transform:scale(0)}to{transform:scale(1)}}
+.fs-lbl{font-size:9px;font-weight:700;text-align:center;line-height:1.2;color:var(--muted);white-space:nowrap}
+.fluxo-step.fs-done   .fs-lbl{color:var(--G400)}
+.fluxo-step.fs-active .fs-lbl{color:var(--amber)}
+.fluxo-step.fs-final  .fs-lbl{color:var(--G300)}
+.fs-data{font-size:7px;color:var(--muted);font-family:var(--mono);text-align:center;max-width:58px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fluxo-status{margin-top:10px;padding-top:8px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.fluxo-status-txt{font-size:11px;font-weight:700;display:flex;align-items:center;gap:6px}
+.fluxo-pct{font-size:10px;font-family:var(--mono);color:var(--muted)}
+
+/* ══ ASSISTENTE IA ATENDIMENTO ══ */
+.atend-wrap{display:flex;flex-direction:column;gap:0}
+.atend-msgs{flex:1;min-height:200px;max-height:320px;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
+.atend-msg{display:flex;gap:8px;animation:msgIn .2s ease}
+@keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.atend-msg.user{flex-direction:row-reverse}
+.atend-avatar{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.atend-avatar.bot{background:linear-gradient(135deg,var(--G500),var(--G700));color:#fff}
+.atend-avatar.user{background:var(--surf3);color:var(--text2)}
+.atend-bubble{max-width:85%;padding:10px 13px;border-radius:14px;font-size:13px;line-height:1.55;color:var(--text)}
+.atend-msg.bot  .atend-bubble{background:var(--surf2);border:1px solid var(--border);border-top-left-radius:4px}
+.atend-msg.user .atend-bubble{background:linear-gradient(135deg,var(--G600),var(--G700));color:#fff;border-top-right-radius:4px}
+.atend-typing .atend-bubble{color:var(--muted)}
+.atend-typing span{display:inline-block;animation:dot 1.2s ease-in-out infinite}
+.atend-typing span:nth-child(2){animation-delay:.2s}
+.atend-typing span:nth-child(3){animation-delay:.4s}
+@keyframes dot{0%,80%,100%{opacity:.3;transform:scale(.7)}40%{opacity:1;transform:scale(1)}}
+
+/* Chips de opções rápidas */
+.opts-chips{display:flex;flex-wrap:wrap;gap:6px;padding:8px 12px;border-top:1px solid var(--border)}
+.opt-chip{
+  padding:7px 12px;border-radius:99px;font-size:12px;font-weight:600;
+  background:var(--surf3);border:1px solid var(--border2);color:var(--text2);
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+}
+.opt-chip:active{background:rgba(34,197,94,.15);border-color:var(--G500);color:var(--G400)}
+.opt-chip.sel{background:rgba(34,197,94,.15);border-color:var(--G500);color:var(--G400)}
+
+/* Input de texto atendimento */
+.atend-input-row{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--border);background:var(--surf);flex-shrink:0}
+.atend-inp{flex:1;background:var(--surf2);border:1px solid var(--border2);border-radius:20px;color:var(--text);padding:9px 14px;font-size:13px;outline:none;font-family:var(--font)}
+.atend-inp:focus{border-color:var(--acc)}
+.atend-inp::placeholder{color:var(--muted)}
+.atend-send{width:36px;height:36px;background:linear-gradient(135deg,var(--G500),var(--G700));border-radius:50%;color:#fff;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;box-shadow:0 2px 8px rgba(34,197,94,.3)}
+.atend-send:disabled{opacity:.35}
+
+/* Botão microfone */
+.btn-mic{
+  width:36px;height:36px;border-radius:50%;
+  background:var(--surf3);border:1px solid var(--border2);
+  color:var(--text2);font-size:15px;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;flex-shrink:0;
+}
+.btn-mic.gravando{background:rgba(248,113,113,.15);border-color:var(--red);color:var(--red);animation:micPulse 1s ease-in-out infinite}
+@keyframes micPulse{0%,100%{box-shadow:0 0 0 0 rgba(248,113,113,.4)}50%{box-shadow:0 0 0 8px rgba(248,113,113,0)}}
+
+/* ══ CERTIDÃO ══ */
+.cert-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.cert-label{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;display:flex;align-items:center;gap:6px}
+.cert-actions{display:flex;gap:6px}
+.cert-txt{font-size:12px;line-height:1.7;min-height:160px;font-family:var(--mono)}
+.cert-edit-bar{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+
+/* PJe status */
+.pje-done{
+  background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.25);
+  border-radius:var(--r-sm);padding:10px 12px;display:flex;align-items:center;gap:10px;
+  margin:10px 0;
+}
+.pje-done i{color:var(--purple);font-size:18px}
+.pje-done-txt .ttl{font-size:12px;font-weight:700;color:var(--purple)}
+.pje-done-txt .sub{font-size:10px;color:var(--text2);font-family:var(--mono)}
+
+/* ══ MINI PROGRESS (lista) ══ */
+.etapa-track{display:flex;align-items:center;gap:0;margin-top:8px}
+.ep{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;position:relative}
+.ep::after{content:'';position:absolute;top:7px;left:50%;right:-50%;height:2px;background:var(--border2);z-index:0}
+.ep:last-child::after{display:none}
+.ep.done::after{background:var(--G500)}
+.ep-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border2);background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:6px;z-index:1;position:relative;flex-shrink:0}
+.ep.done  .ep-dot{border-color:var(--G500);background:rgba(34,197,94,.15);color:var(--G400)}
+.ep.active .ep-dot{border-color:var(--amber);background:var(--amber-d);color:var(--amber);animation:pulse 1.5s ease-in-out infinite}
+.ep.pje   .ep-dot{border-color:var(--purple);background:var(--purple-d);color:var(--purple)}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(251,191,36,.4)}50%{box-shadow:0 0 0 4px rgba(251,191,36,0)}}
+.ep-lbl{font-size:8px;font-weight:600;color:var(--muted);text-align:center;white-space:nowrap}
+.ep.done  .ep-lbl{color:var(--G400)}
+.ep.active .ep-lbl{color:var(--amber)}
+.ep.pje   .ep-lbl{color:var(--purple)}
+
+/* ══ TIMELINE ══ */
+.timeline{padding-left:30px;position:relative}
+.timeline::before{content:'';position:absolute;left:11px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--G500),var(--border))}
+.tl-item{position:relative;margin-bottom:18px}
+.tl-item:last-child{margin-bottom:0}
+.tl-dot{position:absolute;left:-24px;top:2px;width:16px;height:16px;border-radius:50%;border:2px solid var(--G500);background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:7px}
+.tl-dot.ok{border-color:var(--G400);background:rgba(34,197,94,.15);color:var(--G400)}
+.tl-dot.neg{border-color:var(--red);background:var(--red-d);color:var(--red)}
+.tl-dot.wpp{border-color:#4ade80;background:rgba(74,222,128,.12);color:#4ade80}
+.tl-dot.cert{border-color:var(--purple);background:var(--purple-d);color:var(--purple)}
+.tl-dot.pje{border-color:var(--G500);background:rgba(34,197,94,.12);color:var(--G400)}
+.tl-dot.ia{border-color:var(--amber);background:var(--amber-d);color:var(--amber)}
+.tl-card{background:var(--surf2);border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 11px}
+.tl-titulo{font-size:12px;font-weight:700;color:var(--text)}
+.tl-hora{font-size:9px;color:var(--muted);font-family:var(--mono);margin-top:2px}
+.tl-detalhe{font-size:11px;color:var(--text2);margin-top:4px;line-height:1.5}
+
+/* ══ PARTES ══ */
+.parte-card{background:var(--surf2);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:8px}
+.parte-nome{font-size:13px;font-weight:700;color:var(--text)}
+.parte-tipo{font-size:10px;color:var(--muted);margin-top:2px}
+.parte-contatos{margin-top:8px;display:flex;flex-direction:column;gap:5px}
+.contato-row{display:flex;align-items:center;gap:8px}
+.contato-icon{width:22px;height:22px;border-radius:4px;background:var(--surf3);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
+.contato-val{font-size:12px;color:var(--text2);font-family:var(--mono);flex:1}
+.btn-wpp{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:var(--G400);border-radius:4px;font-size:10px;font-weight:700;padding:3px 8px}
+
+/* ══ SEARCH ══ */
+.search-bar{display:flex;gap:8px;margin-bottom:12px}
+.search-wrap{position:relative;flex:1}
+.search-inp{width:100%;background:var(--surf2);border:1px solid var(--border2);border-radius:20px;color:var(--text);padding:9px 14px 9px 38px;font-size:13px;outline:none;font-family:var(--font)}
+.search-inp:focus{border-color:var(--acc)}
+.search-inp::placeholder{color:var(--muted)}
+.search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none}
+.filter-chips{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;padding-bottom:4px;scrollbar-width:none}
+.filter-chips::-webkit-scrollbar{display:none}
+.fchip{padding:5px 12px;border-radius:99px;font-size:11px;font-weight:600;border:1px solid var(--border2);color:var(--text2);background:var(--surf2);cursor:pointer;white-space:nowrap;transition:all .15s}
+.fchip.active{background:rgba(34,197,94,.15);border-color:var(--G500);color:var(--G400)}
+
+/* ══ MODO SEGURO/PRODUTIVO ══ */
+.modo-seletor{display:flex;background:var(--surf3);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;margin-bottom:12px}
+.modo-btn{flex:1;padding:9px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;transition:background .15s;border-right:1px solid var(--border2);position:relative}
+.modo-btn:last-child{border-right:none}
+.modo-btn i{font-size:17px}
+.modo-btn .mb-lbl{font-size:10px;font-weight:700}
+.modo-btn .mb-sub{font-size:9px;color:var(--muted);line-height:1.2;text-align:center}
+.modo-btn.modo-seguro.sel{background:rgba(34,197,94,.12);color:var(--G400)}
+.modo-btn.modo-seguro.sel .mb-lbl{color:var(--G400)}
+.modo-btn.modo-produtivo.sel{background:var(--amber-d);color:var(--amber)}
+.modo-btn.modo-produtivo.sel .mb-lbl{color:var(--amber)}
+.modo-btn:not(.sel){color:var(--muted)}
+.modo-info{border-radius:var(--r-sm);padding:9px 12px;font-size:11px;line-height:1.5;margin-bottom:12px;display:flex;gap:8px;align-items:flex-start}
+.modo-info i{font-size:13px;flex-shrink:0;margin-top:1px}
+.info-seguro{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);color:rgba(134,239,172,.9)}
+.info-prod{background:var(--amber-d);border:1px solid rgba(251,191,36,.2);color:rgba(251,191,36,.9)}
+
+/* ══ IA BADGE ══ */
+.ia-badge{display:inline-flex;align-items:center;gap:4px;background:var(--amber-d);border:1px solid rgba(251,191,36,.3);color:var(--amber);border-radius:99px;font-size:9px;font-weight:700;padding:2px 8px}
+.ia-spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(34,197,94,.3);border-top-color:var(--acc);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-left:4px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ══ OPCOES BTN ══ */
+.opcoes-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opcao-btn{background:var(--surf2);border:1.5px solid var(--border2);border-radius:var(--r);padding:12px 10px;text-align:center;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:6px}
+.opcao-btn:active{background:var(--surf3)}
+.opcao-btn.sel{border-color:var(--acc);background:rgba(34,197,94,.08)}
+.opcao-btn i{font-size:20px}
+.opcao-btn span{font-size:11px;font-weight:600;color:var(--text2);line-height:1.3}
+.opcao-btn.sel span{color:var(--G400)}
+
+/* ══ FAB ══ */
+#fab{
+  position:fixed;bottom:calc(var(--nav) + 16px);right:16px;
+  width:54px;height:54px;
+  background:linear-gradient(135deg,var(--G500),var(--G700));
+  border-radius:50%;color:#fff;font-size:22px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 24px rgba(34,197,94,.45);z-index:90;
+  transition:transform .15s,box-shadow .15s;
+}
+#fab:active{transform:scale(.9);box-shadow:0 2px 12px rgba(34,197,94,.3)}
+
+/* ══ TOAST ══ */
+#toast-container{position:fixed;top:calc(var(--topbar) + 10px);left:14px;right:14px;z-index:9999;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.toast{background:var(--surf3);border:1px solid var(--border2);border-radius:var(--r-sm);padding:10px 14px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:8px;animation:toastIn .25s ease}
+.toast.ok  {border-left:3px solid var(--G500); color:var(--G400)}
+.toast.err {border-left:3px solid var(--red);  color:var(--red)}
+.toast.warn{border-left:3px solid var(--amber);color:var(--amber)}
+.toast.info{border-left:3px solid var(--blue); color:var(--blue)}
+@keyframes toastIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══ EMPTY ══ */
+.empty{text-align:center;padding:44px 20px;color:var(--muted)}
+.empty i{font-size:38px;display:block;margin-bottom:10px;opacity:.35}
+.empty p{font-size:13px;line-height:1.5}
+
+/* ══ MISC ══ */
+.divider{height:1px;background:var(--border);margin:12px 0}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.sec-title{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.8px}
+.sec-action{font-size:12px;color:var(--acc);font-weight:600}
+.mt-8{margin-top:8px}.mt-12{margin-top:12px}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div id="topbar">
+  <div class="tb-left">
+    <div class="tb-logo">OJ</div>
+    <div><div class="tb-title">Mandados IA</div></div>
+  </div>
+  <div class="tb-right">
+    <button class="tb-btn" onclick="navTo('ia')" title="Assistente IA"><i class="fa fa-robot"></i></button>
+    <button class="tb-btn" onclick="abrirConfigs()" title="Configurações"><i class="fa fa-cog"></i></button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+  <!-- HOME -->
+  <div id="view-home" class="view active view-pad">
+    <div class="stats-row">
+      <div class="stat-chip sc-g"><div class="sc-val" id="st-total">0</div><div class="sc-lbl">Total</div></div>
+      <div class="stat-chip sc-a"><div class="sc-val" id="st-pend">0</div><div class="sc-lbl">Pendentes</div></div>
+      <div class="stat-chip sc-ok"><div class="sc-val" id="st-ok">0</div><div class="sc-lbl">Concluídos</div></div>
+      <div class="stat-chip sc-p"><div class="sc-val" id="st-pje">0</div><div class="sc-lbl">No PJe</div></div>
+    </div>
+    <div class="sec-hdr">
+      <span class="sec-title">Recentes</span>
+      <button class="sec-action" onclick="navTo('mandados')">Ver todos</button>
+    </div>
+    <div class="mand-list" id="home-list"></div>
+    <div class="empty" id="home-empty" style="display:none"><i class="fa fa-scroll"></i><p>Nenhum mandado ainda.<br>Toque em + para adicionar.</p></div>
+  </div>
+
+  <!-- MANDADOS -->
+  <div id="view-mandados" class="view view-pad">
+    <div class="search-bar">
+      <div class="search-wrap">
+        <i class="fa fa-search search-icon"></i>
+        <input type="search" class="search-inp" id="search-inp" placeholder="Buscar nome, processo, endereço…" oninput="filtrar()">
+      </div>
+      <button class="btn btn-g btn-sm" onclick="buscarIA()"><i class="fa fa-robot"></i></button>
+    </div>
+    <div class="filter-chips" id="filter-chips">
+      <div class="fchip active" onclick="setFiltro('todos',this)">Todos</div>
+      <div class="fchip" onclick="setFiltro('eletronico',this)">Eletrônico</div>
+      <div class="fchip" onclick="setFiltro('presencial',this)">Presencial</div>
+      <div class="fchip" onclick="setFiltro('pendente',this)">Pendentes</div>
+      <div class="fchip" onclick="setFiltro('concluido',this)">Concluídos</div>
+      <div class="fchip" onclick="setFiltro('negativo',this)">Negativos</div>
+    </div>
+    <div class="mand-list" id="mand-list"></div>
+    <div class="empty" id="mand-empty" style="display:none"><i class="fa fa-filter"></i><p>Nenhum mandado encontrado.</p></div>
+  </div>
+
+  <!-- HISTÓRICO -->
+  <div id="view-historico" class="view view-pad">
+    <div class="sec-hdr"><span class="sec-title">Histórico de Ações</span></div>
+    <div id="hist-list" class="timeline"></div>
+    <div class="empty" id="hist-empty" style="display:none"><i class="fa fa-clock-rotate-left"></i><p>Nenhuma ação ainda.</p></div>
+  </div>
+
+  <!-- ASSISTENTE IA -->
+  <div id="view-ia" class="view" style="padding:0">
+    <div style="display:flex;flex-direction:column;height:100%">
+      <!-- Banner mandado ativo -->
+      <div id="ia-mandado-banner" style="display:none;padding:8px 14px;background:rgba(34,197,94,.08);border-bottom:1px solid rgba(34,197,94,.2);flex-shrink:0">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+          <div style="display:flex;align-items:center;gap:7px;min-width:0">
+            <div style="width:22px;height:22px;border-radius:5px;background:rgba(34,197,94,.15);color:var(--G400);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0"><i class="fa fa-scroll"></i></div>
+            <div style="min-width:0">
+              <div id="ia-banner-nome" style="font-size:11px;font-weight:700;color:var(--G400);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+              <div id="ia-banner-proc" style="font-size:9px;color:var(--muted);font-family:var(--mono)"></div>
+            </div>
+          </div>
+          <button onclick="limparContextoMandado()" style="font-size:9px;color:var(--muted);background:none;border:none;cursor:pointer;white-space:nowrap;flex-shrink:0"><i class="fa fa-xmark"></i> limpar</button>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:7px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px">
+          <button class="opt-chip" onclick="analisarRapido('resumo')"><i class="fa fa-list-ul"></i> Resumo</button>
+          <button class="opt-chip" onclick="analisarRapido('estrategia')"><i class="fa fa-lightbulb"></i> Estratégia</button>
+          <button class="opt-chip" onclick="analisarRapido('wpp')"><i class="fab fa-whatsapp"></i> Texto WPP</button>
+          <button class="opt-chip" onclick="analisarRapido('certidao')"><i class="fa fa-scroll"></i> Certidão</button>
+          <button class="opt-chip" onclick="analisarRapido('pendencias')"><i class="fa fa-triangle-exclamation"></i> Pendências</button>
+        </div>
+      </div>
+      <div class="ai-msgs" id="ai-msgs" style="flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch">
+        <div class="atend-msg bot" style="display:flex;gap:8px">
+          <div class="atend-avatar bot"><i class="fa fa-comments"></i></div>
+          <div class="atend-bubble" style="background:var(--surf2);border:1px solid var(--border);border-radius:14px;border-top-left-radius:4px;padding:10px 13px;font-size:13px;line-height:1.55;max-width:85%">Olá! Sou o assistente IA. Posso ajudar com mandados, certidões, WhatsApp ou dúvidas jurídicas.<br><br>Abra um mandado e toque em <strong style="color:var(--G400)">Analisar com IA</strong> para análise contextual.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--border);background:var(--surf)">
+        <input type="text" id="ai-inp" placeholder="Pergunte ou cole o mandado…" style="flex:1;background:var(--surf2);border:1px solid var(--border2);border-radius:20px;color:var(--text);padding:9px 14px;font-size:13px;outline:none;font-family:var(--font)" onkeydown="if(event.key==='Enter')enviarMsgIA()">
+        <button onclick="enviarMsgIA()" id="ai-send" style="width:36px;height:36px;background:linear-gradient(135deg,var(--G500),var(--G700));border-radius:50%;color:#fff;font-size:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(34,197,94,.3)"><i class="fa fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- BOTTOM NAV -->
+<div id="bottomnav">
+  <button class="nav-btn active" id="nav-home" onclick="navTo('home')"><i class="fa fa-house"></i>Home</button>
+  <button class="nav-btn" id="nav-mandados" onclick="navTo('mandados')"><i class="fa fa-scroll"></i>Mandados</button>
+  <button class="nav-btn" id="nav-historico" onclick="navTo('historico')"><i class="fa fa-clock-rotate-left"></i>Histórico</button>
+  <button class="nav-btn" id="nav-ia" onclick="navTo('ia')"><i class="fa fa-robot"></i>IA</button>
+</div>
+
+<!-- FAB -->
+<button id="fab" onclick="abrirNovoMandado()"><i class="fa fa-plus"></i></button>
+
+<!-- TOAST -->
+<div id="toast-container"></div>
+
+<!-- ══ MODAL: NOVO MANDADO ══ -->
+<div class="modal-overlay" id="modal-novo">
+  <div class="modal-sheet" style="max-height:96vh">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title"><i class="fa fa-plus" style="color:var(--acc);margin-right:6px"></i>Novo Mandado</div>
+      <button class="modal-close" onclick="fecharModal('modal-novo')"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div id="novo-step1">
+        <div class="card" style="border-left:3px solid var(--amber)">
+          <div class="card-hd">
+            <div class="card-hd-icon" style="background:var(--amber-d);color:var(--amber)"><i class="fa fa-camera"></i></div>
+            <div><div class="card-hd-title">Fotografar ou selecionar imagem</div><div class="card-hd-sub">IA lê e extrai os dados automaticamente</div></div>
+          </div>
+          <div class="card-body">
+            <div class="modo-seletor" id="modo-seletor">
+              <div class="modo-btn modo-seguro sel" onclick="setModo('seguro',this)"><i class="fa fa-shield-halved"></i><div class="mb-lbl">Seguro</div><div class="mb-sub">Revisa antes</div></div>
+              <div class="modo-btn modo-produtivo" onclick="setModo('produtivo',this)"><i class="fa fa-bolt"></i><div class="mb-lbl">Produtivo</div><div class="mb-sub">Auto-preenche</div></div>
+            </div>
+            <div class="modo-info info-seguro" id="modo-info-banner"><i class="fa fa-shield-halved"></i><span>IA extrai e apresenta para você revisar antes de preencher.</span></div>
+            <div id="img-preview-wrap" style="display:none;margin-bottom:12px">
+              <div style="position:relative;border-radius:var(--r);overflow:hidden;border:1px solid var(--border2)">
+                <img id="img-preview" style="width:100%;max-height:200px;object-fit:contain;background:#000;display:block">
+                <button onclick="limparImagem()" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,.7);border:none;color:#fff;width:26px;height:26px;border-radius:50%;font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer"><i class="fa fa-xmark"></i></button>
+              </div>
+              <div id="img-nome" style="font-size:10px;color:var(--muted);margin-top:4px;font-family:var(--mono)"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+              <label style="cursor:pointer">
+                <input type="file" id="inp-camera" accept="image/*" capture="environment" style="display:none" onchange="onImagemSelecionada(this)">
+                <div class="opcao-btn"><i class="fa fa-camera" style="color:var(--amber);font-size:22px"></i><span>Câmera</span></div>
+              </label>
+              <label style="cursor:pointer">
+                <input type="file" id="inp-galeria" accept="image/*" style="display:none" onchange="onImagemSelecionada(this)">
+                <div class="opcao-btn"><i class="fa fa-image" style="color:var(--acc);font-size:22px"></i><span>Galeria</span></div>
+              </label>
+            </div>
+            <button class="btn btn-full" id="btn-extrair-img" style="background:linear-gradient(135deg,var(--amber),#f97316);color:#fff;border:none;display:none" onclick="extrairDadosImagem()"><i class="fa fa-wand-magic-sparkles"></i> Extrair dados com IA<span id="ext-spin" style="display:none" class="ia-spin"></span></button>
+            <div style="text-align:center;margin-top:6px"><button onclick="toggleFallbackTexto()" style="font-size:11px;color:var(--muted);background:none;border:none;cursor:pointer;text-decoration:underline">Ou cole o texto do mandado</button></div>
+            <div id="txt-fallback" style="display:none;margin-top:8px">
+              <textarea class="inp" id="novo-texto" rows="4" placeholder="Cole aqui o texto do mandado…"></textarea>
+              <button class="btn btn-full btn-a" style="margin-top:8px" onclick="extrairDadosTexto()"><i class="fa fa-wand-magic-sparkles"></i> Extrair do texto<span id="ext-spin2" style="display:none" class="ia-spin"></span></button>
+            </div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div style="text-align:center;font-size:11px;color:var(--muted);margin-bottom:10px">ou preencha manualmente abaixo</div>
+      </div>
+      <div id="novo-form">
+        <div class="inp-row c2">
+          <div class="inp-group"><div class="inp-label"><i class="fa fa-hashtag" style="color:var(--acc)"></i>Nº Processo</div><input type="text" class="inp" id="f-proc" placeholder="0000000-00.0000.8.11.0001"></div>
+          <div class="inp-group"><div class="inp-label"><i class="fa fa-tag" style="color:var(--acc)"></i>Tipo</div>
+            <select class="inp" id="f-tipo"><option>Citação</option><option>Intimação</option><option>Penhora</option><option>Busca e Apreensão</option><option>Avaliação</option><option>Outro</option></select>
+          </div>
+        </div>
+        <div class="inp-group"><div class="inp-label"><i class="fa fa-person" style="color:var(--acc)"></i>Parte / Réu</div><input type="text" class="inp" id="f-parte" placeholder="Nome completo"></div>
+        <div class="inp-group"><div class="inp-label"><i class="fa fa-location-dot" style="color:var(--acc)"></i>Endereço</div><input type="text" class="inp" id="f-end" placeholder="Rua, Nº, Bairro, Cidade"></div>
+        <div class="inp-row c2">
+          <div class="inp-group"><div class="inp-label"><i class="fa fa-phone" style="color:var(--acc)"></i>Telefone</div><input type="tel" class="inp" id="f-tel" placeholder="(65) 9xxxx-xxxx"></div>
+          <div class="inp-group"><div class="inp-label"><i class="fa fa-mobile" style="color:var(--acc)"></i>WhatsApp</div><input type="tel" class="inp" id="f-wpp" placeholder="(65) 9xxxx-xxxx"></div>
+        </div>
+        <div class="inp-group"><div class="inp-label"><i class="fa fa-route" style="color:var(--acc)"></i>Modalidade</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div class="opcao-btn sel" id="op-el" onclick="selModal('eletronico')"><i class="fa fa-mobile-screen" style="color:var(--acc)"></i><span>Eletrônico</span></div>
+            <div class="opcao-btn" id="op-pr" onclick="selModal('presencial')"><i class="fa fa-person-walking" style="color:var(--amber)"></i><span>Presencial</span></div>
+          </div>
+        </div>
+        <div class="inp-group"><div class="inp-label"><i class="fa fa-note-sticky" style="color:var(--acc)"></i>Observações</div><textarea class="inp" id="f-obs" rows="2" placeholder="Informações adicionais…"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div class="btn-row">
+        <button class="btn btn-ghost btn-sm" onclick="fecharModal('modal-novo')">Cancelar</button>
+        <button class="btn btn-primary btn-sm" style="flex:1" onclick="salvarMandado()"><i class="fa fa-floppy-disk"></i> Salvar Mandado</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: DETALHE MANDADO ══ -->
+<div class="modal-overlay" id="modal-detalhe">
+  <div class="modal-sheet" style="max-height:96vh">
+    <div class="modal-handle"></div>
+
+    <!-- Cabeçalho limpo -->
+    <div class="modal-hdr">
+      <div>
+        <div class="modal-title" id="det-title">—</div>
+        <div id="det-proc" style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:2px"></div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button id="det-mod-btn" class="pill pill-g" style="font-size:10px;padding:4px 10px;cursor:pointer" onclick="trocarModalidade()"></button>
+        <button class="btn btn-g btn-sm" style="padding:5px 10px;font-size:10px" onclick="abrirIAComMandado()" title="Analisar com IA"><i class="fa fa-robot"></i></button>
+        <button class="modal-close" onclick="fecharModal('modal-detalhe')"><i class="fa fa-xmark"></i></button>
+      </div>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- FLUXO (compacto) -->
+      <div id="det-fluxo" style="margin-bottom:14px"></div>
+
+      <!-- ABAS: apenas 3 essenciais -->
+      <div class="tabs-wrap">
+        <div class="tabs" id="det-tabs">
+          <div class="tab-slider" id="tab-slider"></div>
+          <button class="tab-btn active" onclick="setTab(0,this)"><i class="fa fa-comments"></i> Atendimento</button>
+          <button class="tab-btn" onclick="setTab(1,this)"><i class="fa fa-scroll"></i> Certidão</button>
+          <button class="tab-btn" onclick="setTab(2,this)"><i class="fa fa-ellipsis"></i> Mais</button>
+        </div>
+      </div>
+
+      <!-- ── TAB 0: ATENDIMENTO ── -->
+      <div class="tab-pane active" id="tab-cump">
+
+        <!-- Status atual (só aparece se já tem resultado) -->
+        <div id="det-resultado-badge" style="display:none;margin-bottom:10px"></div>
+
+        <!-- Chat compacto -->
+        <div id="atend-chat-wrap" style="background:var(--surf2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:10px">
+          <div style="padding:8px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+            <div style="display:flex;align-items:center;gap:6px">
+              <div style="width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--G500),var(--G700));display:flex;align-items:center;justify-content:center"><i class="fa fa-comments" style="color:#fff;font-size:10px"></i></div>
+              <span style="font-size:12px;font-weight:700;color:var(--text)">Assistente</span>
+              <span class="ia-badge" style="font-size:8px">IA</span>
+            </div>
+            <button class="btn btn-ghost btn-sm" style="font-size:10px;padding:4px 8px" onclick="limparChatAtend()"><i class="fa fa-rotate"></i></button>
+          </div>
+          <div class="atend-msgs" id="atend-msgs" style="max-height:240px;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:8px;-webkit-overflow-scrolling:touch"></div>
+          <div class="opts-chips" id="opts-chips" style="display:none"></div>
+          <div class="atend-input-row">
+            <button class="btn-mic" id="btn-mic" onclick="toggleGravacao()" title="Voz"><i class="fa fa-microphone"></i></button>
+            <input type="text" class="atend-inp" id="atend-inp" placeholder="Responda ou use as opções…" onkeydown="if(event.key==='Enter')enviarAtend()">
+            <button class="atend-send" id="atend-send" onclick="enviarAtend()"><i class="fa fa-paper-plane"></i></button>
+          </div>
+        </div>
+
+        <!-- CTA principal: gerar certidão — aparece após ter resultado -->
+        <button class="btn btn-primary btn-full" id="btn-gerar-cert" style="display:none;margin-top:4px" onclick="gerarCertidaoIrParaCert()">
+          <i class="fa fa-wand-magic-sparkles"></i> Gerar Certidão
+          <span id="cert-spin" style="display:none" class="ia-spin"></span>
+        </button>
+
+      </div>
+
+      <!-- ── TAB 1: CERTIDÃO ── -->
+      <div class="tab-pane" id="tab-cert">
+
+        <!-- Certidão gerada ou vazia -->
+        <div id="cert-vazia" style="display:none;text-align:center;padding:24px 0;color:var(--muted)">
+          <i class="fa fa-scroll" style="font-size:28px;opacity:.3;display:block;margin-bottom:8px"></i>
+          <p style="font-size:12px">Conclua o atendimento primeiro<br>e gere a certidão pela IA.</p>
+          <button class="btn btn-ghost btn-sm" style="margin-top:10px" onclick="setTab(0,document.querySelector('#det-tabs .tab-btn'))"><i class="fa fa-arrow-left"></i> Voltar ao atendimento</button>
+        </div>
+
+        <div id="cert-conteudo" style="display:none">
+          <div class="cert-header">
+            <span class="cert-label"><i class="fa fa-scroll" style="color:var(--acc)"></i> Certidão</span>
+            <div class="cert-actions">
+              <button class="btn btn-a btn-sm" onclick="gerarCertidaoAtend()" title="Refazer"><i class="fa fa-rotate"></i> Refazer</button>
+              <button class="btn btn-ghost btn-sm" onclick="editarCertidao()" title="Editar"><i class="fa fa-pen"></i></button>
+            </div>
+          </div>
+          <textarea class="inp cert-txt" id="cert-txt" rows="10" readonly
+            style="background:var(--surf2);font-family:var(--mono);font-size:12px;line-height:1.7;margin-bottom:8px"></textarea>
+          <div class="cert-edit-bar" id="cert-edit-bar" style="display:none">
+            <button class="btn btn-g btn-sm" onclick="salvarEdicaoCert()"><i class="fa fa-floppy-disk"></i> Salvar</button>
+            <button class="btn btn-ghost btn-sm" onclick="cancelarEdicaoCert()">Cancelar</button>
+          </div>
+          <!-- Status PJe -->
+          <div id="pje-status-wrap" style="display:none;margin-bottom:10px">
+            <div class="pje-done"><i class="fa fa-circle-check"></i>
+              <div class="pje-done-txt"><div class="ttl">Juntado no PJe</div><div class="sub" id="pje-data"></div></div>
+            </div>
+          </div>
+          <!-- Ações PJe -->
+          <button class="btn btn-full" id="btn-copiar-pje"
+            style="background:linear-gradient(135deg,var(--purple),#7c3aed);color:#fff;border:none;padding:13px;border-radius:var(--r)"
+            onclick="copiarEJuntar()">
+            <i class="fa fa-copy"></i> Copiar e juntar no PJe
+            <span id="pje-spin" style="display:none" class="ia-spin"></span>
+          </button>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+            <button class="btn btn-ghost btn-sm" onclick="copiarCertidao()"><i class="fa fa-copy"></i> Só copiar</button>
+            <button class="btn btn-p btn-sm" onclick="marcarPje()"><i class="fa fa-gavel"></i> Só PJe</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── TAB 2: MAIS (Partes + Histórico) ── -->
+      <div class="tab-pane" id="tab-mais">
+        <!-- sub-abas internas simples -->
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <button class="btn btn-g btn-sm" id="mais-btn-partes" onclick="verMaisPartes()" style="flex:1"><i class="fa fa-users"></i> Partes</button>
+          <button class="btn btn-ghost btn-sm" id="mais-btn-hist" onclick="verMaisHist()" style="flex:1"><i class="fa fa-clock-rotate-left"></i> Histórico</button>
+        </div>
+        <div id="mais-partes">
+          <div id="partes-list"></div>
+          <button class="btn btn-ghost btn-sm btn-full mt-8" onclick="adicionarParte()"><i class="fa fa-plus"></i> Adicionar Parte</button>
+        </div>
+        <div id="mais-hist" style="display:none">
+          <div id="det-hist" class="timeline"></div>
+        </div>
+      </div>
+
+    </div><!-- /modal-body -->
+  </div>
+</div>
+
+<!-- ══ MODAL: REVISÃO IA ══ -->
+<div class="modal-overlay" id="modal-revisao">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div><div class="modal-title"><i class="fa fa-shield-halved" style="color:var(--G400);margin-right:6px"></i>Revisar dados extraídos</div><div style="font-size:10px;color:var(--muted);margin-top:2px">Modo Seguro — confirme antes de preencher</div></div>
+      <button class="modal-close" onclick="fecharModal('modal-revisao')"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="modal-body"><div id="rev-campos"></div></div>
+    <div class="modal-footer">
+      <div class="btn-row">
+        <button class="btn btn-ghost btn-sm" onclick="fecharModal('modal-revisao')">Cancelar</button>
+        <button class="btn btn-primary btn-sm" style="flex:1" onclick="confirmarRevisao()"><i class="fa fa-check"></i> Confirmar e preencher</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: ADICIONAR PARTE ══ -->
+<div class="modal-overlay" id="modal-parte">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr"><div class="modal-title"><i class="fa fa-person" style="color:var(--acc);margin-right:6px"></i>Adicionar Parte</div><button class="modal-close" onclick="fecharModal('modal-parte')"><i class="fa fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div class="inp-group"><div class="inp-label">Nome</div><input type="text" class="inp" id="p-nome" placeholder="Nome completo"></div>
+      <div class="inp-group"><div class="inp-label">Tipo</div><select class="inp" id="p-tipo"><option>Réu</option><option>Requerido</option><option>Representante</option><option>Cônjuge</option><option>Outro</option></select></div>
+      <div class="inp-row c2">
+        <div class="inp-group"><div class="inp-label">Telefone</div><input type="tel" class="inp" id="p-tel" placeholder="(65) 9xxxx-xxxx"></div>
+        <div class="inp-group"><div class="inp-label">WhatsApp</div><input type="tel" class="inp" id="p-wpp" placeholder="(65) 9xxxx-xxxx"></div>
+      </div>
+      <div class="inp-group"><div class="inp-label">Endereço</div><input type="text" class="inp" id="p-end" placeholder="Endereço desta parte"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-primary btn-full" onclick="salvarParte()"><i class="fa fa-floppy-disk"></i> Salvar Parte</button></div>
+  </div>
+</div>
+
+<!-- ══ MODAL: CONFIGS ══ -->
+<div class="modal-overlay" id="modal-cfg">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr"><div class="modal-title"><i class="fa fa-cog" style="color:var(--acc);margin-right:6px"></i>Configurações</div><button class="modal-close" onclick="fecharModal('modal-cfg')"><i class="fa fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div class="inp-group"><div class="inp-label"><i class="fa fa-key" style="color:var(--amber)"></i>API Key Anthropic</div>
+        <div style="display:flex;gap:8px"><input type="password" class="inp" id="cfg-key" placeholder="sk-ant-…" style="flex:1"><button class="btn btn-g btn-sm" onclick="salvarKey()"><i class="fa fa-floppy-disk"></i> Salvar</button></div>
+        <div id="key-status" style="font-size:11px;color:var(--muted);margin-top:5px">Não configurada</div>
+      </div>
+      <div class="inp-group"><div class="inp-label"><i class="fa fa-user" style="color:var(--acc)"></i>Nome do Oficial</div><input type="text" class="inp" id="cfg-nome" placeholder="Dr. Nome Sobrenome"></div>
+      <div class="inp-group"><div class="inp-label"><i class="fa fa-map-pin" style="color:var(--acc)"></i>Zona / Vara</div><input type="text" class="inp" id="cfg-zona" placeholder="Zona 07 · 3ª Vara Cível"></div>
+      <div class="divider"></div>
+      <button class="btn btn-r btn-sm btn-full" onclick="limparDados()"><i class="fa fa-trash"></i> Limpar todos os dados</button>
+    </div>
+    <div class="modal-footer"><button class="btn btn-primary btn-full" onclick="salvarConfigs()"><i class="fa fa-floppy-disk"></i> Salvar Configurações</button></div>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════════════
+   ESTADO GLOBAL
+════════════════════════════════════════ */
+let DB = { mandados:[], historico:[], configs:{apiKey:'',nome:'Oficial',zona:'Zona 07'} };
+let filtroAtivo='todos', textoFiltro='';
+let mandadoAtivo=null;
+let novaModalidade='eletronico';
+let modoExtracao='seguro';
+let imgBase64=null, imgMediaType='image/jpeg';
+let dadosRevisao=null;
+let atendHistory=[];
+let micRec=null, micGravando=false;
+let certEditando=false;
+
+/* ════════════════════════════════════════
+   PERSISTÊNCIA
+════════════════════════════════════════ */
+function salvarDB(){try{localStorage.setItem('oj_db_v2',JSON.stringify(DB))}catch(e){}}
+function carregarDB(){try{const r=localStorage.getItem('oj_db_v2');if(r)DB=JSON.parse(r)}catch(e){}}
+
+/* ════════════════════════════════════════
+   UTILITÁRIOS
+════════════════════════════════════════ */
+function agora(){return new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function apiKey(){return DB.configs.apiKey||''}
+function getApiKey(){const k=apiKey();if(!k){toast('Configure a API Key nas Configurações','warn');return null}return k}
+
+function toast(msg,tipo='info',dur=3000){
+  const c=document.getElementById('toast-container');
+  const t=document.createElement('div');
+  const icons={ok:'fa-check',err:'fa-triangle-exclamation',warn:'fa-exclamation',info:'fa-circle-info'};
+  t.className=`toast ${tipo}`;
+  t.innerHTML=`<i class="fa ${icons[tipo]||'fa-circle-info'}"></i>${msg}`;
+  c.appendChild(t);setTimeout(()=>t.remove(),dur);
+}
+
+/* ════════════════════════════════════════
+   NAVEGAÇÃO
+════════════════════════════════════════ */
+function navTo(v){
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  document.getElementById('nav-'+v).classList.add('active');
+  if(v==='mandados')renderMandados();
+  if(v==='historico')renderHistorico();
+  if(v==='home')renderHome();
+}
+
+/* ════════════════════════════════════════
+   MODAIS
+════════════════════════════════════════ */
+function abrirModal(id){const m=document.getElementById(id);m.style.display='flex';requestAnimationFrame(()=>m.classList.add('open'))}
+function fecharModal(id){const m=document.getElementById(id);m.classList.remove('open');setTimeout(()=>m.style.display='none',220)}
+document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m)fecharModal(m.id)})});
+
+/* ════════════════════════════════════════
+   ABAS ANIMADAS
+════════════════════════════════════════ */
+function setTab(idx,btn){
+  const panes=['tab-cump','tab-cert','tab-mais'];
+  panes.forEach((p,i)=>document.getElementById(p).classList.toggle('active',i===idx));
+  const btns=document.querySelectorAll('#det-tabs .tab-btn');
+  btns.forEach((b,i)=>b.classList.toggle('active',i===idx));
+  // mover slider
+  const slider=document.getElementById('tab-slider');
+  const tabsEl=document.getElementById('det-tabs');
+  if(slider&&btns[idx]){
+    const r=btns[idx].getBoundingClientRect();
+    const wr=tabsEl.getBoundingClientRect();
+    if(r.width>0){slider.style.left=(r.left-wr.left+4)+'px';slider.style.width=(r.width-4)+'px';}
+  }
+  if(idx===1)renderCertidaoTab();
+  if(idx===2){renderPartes();renderDetHistorico();}
+}
+function verMaisPartes(){
+  document.getElementById('mais-partes').style.display='block';
+  document.getElementById('mais-hist').style.display='none';
+  document.getElementById('mais-btn-partes').className='btn btn-g btn-sm';
+  document.getElementById('mais-btn-hist').className='btn btn-ghost btn-sm';
+  renderPartes();
+}
+function verMaisHist(){
+  document.getElementById('mais-partes').style.display='none';
+  document.getElementById('mais-hist').style.display='block';
+  document.getElementById('mais-btn-partes').className='btn btn-ghost btn-sm';
+  document.getElementById('mais-btn-hist').className='btn btn-g btn-sm';
+  renderDetHistorico();
+}
+function renderCertidaoTab(){
+  const m=getMandado(mandadoAtivo);if(!m)return;
+  const vazia=document.getElementById('cert-vazia');
+  const conteudo=document.getElementById('cert-conteudo');
+  if(m.certidao){
+    if(vazia)vazia.style.display='none';
+    if(conteudo)conteudo.style.display='block';
+  }else{
+    if(vazia)vazia.style.display='block';
+    if(conteudo)conteudo.style.display='none';
+  }
+}
+
+function initTabSlider(){
+  // aguardar animação do modal (slideUp 280ms)
+  setTimeout(()=>{
+    const btns=document.querySelectorAll('#det-tabs .tab-btn');
+    const slider=document.getElementById('tab-slider');
+    const tabsEl=document.getElementById('det-tabs');
+    if(!slider||!btns[0]||!tabsEl)return;
+    const r=btns[0].getBoundingClientRect();
+    const wr=tabsEl.getBoundingClientRect();
+    if(r.width===0)return; // modal ainda não visível
+    slider.style.left=(r.left-wr.left+4)+'px';
+    slider.style.width=(r.width-4)+'px';
+  },320);
+}
+
+/* ════════════════════════════════════════
+   CONFIGS
+════════════════════════════════════════ */
+function abrirConfigs(){
+  document.getElementById('cfg-key').value=DB.configs.apiKey||'';
+  document.getElementById('cfg-nome').value=DB.configs.nome||'';
+  document.getElementById('cfg-zona').value=DB.configs.zona||'';
+  atualizarKeyStatus();abrirModal('modal-cfg');
+}
+function atualizarKeyStatus(){
+  const el=document.getElementById('key-status');
+  if(el)el.innerHTML=DB.configs.apiKey?'<span style="color:var(--G400)"><i class="fa fa-circle-check"></i> Configurada</span>':'<span style="color:var(--muted)"><i class="fa fa-circle-xmark"></i> Não configurada</span>';
+}
+function salvarKey(){const k=document.getElementById('cfg-key').value.trim();if(!k||!k.startsWith('sk-')){toast('Chave inválida','err');return}DB.configs.apiKey=k;salvarDB();atualizarKeyStatus();toast('Chave salva!','ok')}
+function salvarConfigs(){DB.configs.apiKey=document.getElementById('cfg-key').value.trim();DB.configs.nome=document.getElementById('cfg-nome').value.trim()||'Oficial';DB.configs.zona=document.getElementById('cfg-zona').value.trim()||'Zona 07';salvarDB();fecharModal('modal-cfg');toast('Configurações salvas','ok')}
+function limparDados(){if(!confirm('Apagar TODOS os dados?'))return;DB.mandados=[];DB.historico=[];salvarDB();renderHome();renderMandados();toast('Dados apagados','warn')}
+
+/* ════════════════════════════════════════
+   NOVO MANDADO
+════════════════════════════════════════ */
+function abrirNovoMandado(){
+  ['f-proc','f-parte','f-end','f-tel','f-wpp','f-obs','novo-texto'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});
+  document.getElementById('f-tipo').value='Citação';
+  novaModalidade='eletronico';selModal('eletronico');
+  limparImagem();
+  const tf=document.getElementById('txt-fallback');if(tf)tf.style.display='none';
+  abrirModal('modal-novo');
+}
+function selModal(m){
+  novaModalidade=m;
+  document.getElementById('op-el').classList.toggle('sel',m==='eletronico');
+  document.getElementById('op-pr').classList.toggle('sel',m==='presencial');
+}
+
+/* ════════════════════════════════════════
+   MODO SEGURO / PRODUTIVO
+════════════════════════════════════════ */
+function setModo(modo,el){
+  modoExtracao=modo;
+  document.querySelectorAll('.modo-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  const b=document.getElementById('modo-info-banner');
+  if(modo==='seguro'){b.className='modo-info info-seguro';b.innerHTML='<i class="fa fa-shield-halved"></i><span>IA extrai e apresenta para você <strong>revisar</strong> antes de preencher.</span>'}
+  else{b.className='modo-info info-prod';b.innerHTML='<i class="fa fa-bolt"></i><span>IA extrai e <strong>preenche automaticamente</strong> todos os campos.</span>'}
+}
+
+/* ════════════════════════════════════════
+   IMAGEM
+════════════════════════════════════════ */
+function onImagemSelecionada(input){
+  const file=input.files[0];if(!file)return;
+  if(file.size>5*1024*1024){toast('Imagem muito grande (máx 5MB)','warn');return}
+  imgMediaType=file.type||'image/jpeg';
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const du=e.target.result;imgBase64=du.split(',')[1];
+    document.getElementById('img-preview').src=du;
+    document.getElementById('img-nome').textContent=file.name+' · '+(file.size/1024).toFixed(0)+' KB';
+    document.getElementById('img-preview-wrap').style.display='block';
+    document.getElementById('btn-extrair-img').style.display='flex';
+    toast('Imagem carregada','info');
+  };
+  reader.readAsDataURL(file);input.value='';
+}
+function limparImagem(){imgBase64=null;const w=document.getElementById('img-preview-wrap');if(w)w.style.display='none';const b=document.getElementById('btn-extrair-img');if(b)b.style.display='none'}
+function toggleFallbackTexto(){const d=document.getElementById('txt-fallback');d.style.display=d.style.display==='none'?'block':'none'}
+
+async function _fetchAnthropic(payload, apiKey){
+  // Tenta chamada direta primeiro; se falhar por CORS/rede, usa proxy
+  const DIRECT = 'https://api.anthropic.com/v1/messages';
+  const PROXY  = 'https://corsproxy.io/?' + encodeURIComponent(DIRECT);
+  const hdrs = {
+    'Content-Type':'application/json',
+    'x-api-key': apiKey,
+    'anthropic-version':'2023-06-01',
+    'anthropic-dangerous-direct-browser-access':'true'
+  };
+  let resp;
+  try {
+    resp = await fetch(DIRECT, {method:'POST', headers:hdrs, body:JSON.stringify(payload)});
+  } catch(netErr) {
+    console.warn('Fetch direto falhou, tentando proxy:', netErr.message);
+    // No proxy, x-api-key não pode ser enviado como header customizado — usa URL param
+    const proxyHdrs = {'Content-Type':'application/json'};
+    const proxyPayload = {...payload, _anthropic_key: apiKey};
+    // Proxy sem repassar a key no header — manda direto com header via proxy que suporta
+    resp = await fetch(PROXY, {method:'POST', headers:{...proxyHdrs,'x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}, body:JSON.stringify(payload)});
+  }
+  const data = await resp.json();
+  if(!resp.ok) throw new Error(data?.error?.message || 'Erro HTTP '+resp.status);
+  return data;
+}
+
+async function chamarAPIExtracao(messages, apiKeyOrBool){
+  // aceita tanto a key diretamente quanto o formato antigo (booleano)
+  const k = typeof apiKeyOrBool === 'string' ? apiKeyOrBool : getApiKey();
+  if(!k) return null;
+  const sys = `Você é um assistente jurídico. Extraia dados de mandado judicial em JSON puro: {"processo":"","tipo":"Citação|Intimação|Penhora|Busca e Apreensão|Avaliação|Outro","parte":"","endereco":"","telefone":"","whatsapp":"","obs":""} Responda APENAS com JSON válido, sem markdown.`;
+  const payload = {
+    model:'claude-sonnet-4-20250514',
+    max_tokens:800,
+    system:sys,
+    messages
+  };
+  const data = await _fetchAnthropic(payload, k);
+  const raw = (data.content?.[0]?.text || '').trim();
+  if(!raw) throw new Error('IA retornou resposta vazia');
+  // limpar possível markdown mesmo pedindo para não usar
+  const clean = raw.replace(/^```json\s*/,'').replace(/\s*```$/,'').trim();
+  try{
+    return JSON.parse(clean);
+  }catch(parseErr){
+    console.error('Erro ao parsear JSON da IA:', raw);
+    throw new Error('IA não retornou JSON válido');
+  }
+}
+
+function aplicarDados(d){
+  if(d.processo)document.getElementById('f-proc').value=d.processo;
+  if(d.tipo)document.getElementById('f-tipo').value=d.tipo;
+  if(d.parte)document.getElementById('f-parte').value=d.parte;
+  if(d.endereco)document.getElementById('f-end').value=d.endereco;
+  if(d.telefone)document.getElementById('f-tel').value=d.telefone;
+  if(d.whatsapp)document.getElementById('f-wpp').value=d.whatsapp;
+  if(d.obs)document.getElementById('f-obs').value=d.obs;
+  document.getElementById('novo-form').scrollIntoView({behavior:'smooth'});
+}
+
+async function extrairDadosImagem(){
+  if(!imgBase64){toast('Selecione uma imagem','warn');return}
+  const k=getApiKey();if(!k)return;
+  const spin=document.getElementById('ext-spin');
+  const btn=document.getElementById('btn-extrair-img');
+  spin.style.display='inline-block';btn.disabled=true;
+  try{
+    const messages=[{role:'user',content:[
+      {type:'image',source:{type:'base64',media_type:imgMediaType,data:imgBase64}},
+      {type:'text',text:'Extraia os dados deste mandado judicial conforme instruído.'}
+    ]}];
+    const d=await chamarAPIExtracao(messages,k);
+    if(!d)throw new Error('Resposta vazia da IA');
+    if(modoExtracao==='produtivo'){aplicarDados(d);toast('⚡ Preenchido automaticamente!','ok')}
+    else{abrirRevisaoIA(d)}
+    adicionarHistorico({tipo:'ia',titulo:'Extração IA (imagem) · '+modoExtracao,detalhe:'Visão computacional'});
+  }catch(e){
+    toast('Erro na extração: '+e.message.slice(0,60),'err');
+    console.error('extrairDadosImagem erro:',e);
+  }finally{
+    spin.style.display='none';btn.disabled=false;
+  }
+}
+
+async function extrairDadosTexto(){
+  const txv=document.getElementById('novo-texto').value.trim();
+  if(!txv){toast('Cole o texto do mandado','warn');return}
+  const k=getApiKey();if(!k)return;
+  const spin=document.getElementById('ext-spin2');spin.style.display='inline-block';
+  try{
+    const d=await chamarAPIExtracao([{role:'user',content:txv}],k);
+    if(!d)throw new Error('Resposta vazia da IA');
+    if(modoExtracao==='produtivo'){aplicarDados(d);toast('⚡ Preenchido automaticamente!','ok')}
+    else{abrirRevisaoIA(d)}
+    adicionarHistorico({tipo:'ia',titulo:'Extração IA (texto) · '+modoExtracao,detalhe:''});
+  }catch(e){
+    toast('Erro na extração: '+e.message.slice(0,60),'err');
+    console.error('extrairDadosTexto erro:',e);
+  }finally{
+    spin.style.display='none';
+  }
+}
+
+function abrirRevisaoIA(d){
+  dadosRevisao=d;
+  const campos=[
+    {id:'rv-proc',lbl:'Nº Processo',val:d.processo||'',icon:'fa-hashtag'},
+    {id:'rv-tipo',lbl:'Tipo',val:d.tipo||'',icon:'fa-tag'},
+    {id:'rv-parte',lbl:'Parte / Réu',val:d.parte||'',icon:'fa-person'},
+    {id:'rv-end',lbl:'Endereço',val:d.endereco||'',icon:'fa-location-dot'},
+    {id:'rv-tel',lbl:'Telefone',val:d.telefone||'',icon:'fa-phone'},
+    {id:'rv-wpp',lbl:'WhatsApp',val:d.whatsapp||'',icon:'fa-mobile'},
+    {id:'rv-obs',lbl:'Observações',val:d.obs||'',icon:'fa-note-sticky'},
+  ];
+  document.getElementById('rev-campos').innerHTML=campos.map(c=>`
+    <div class="inp-group">
+      <div class="inp-label"><i class="fa ${c.icon}" style="color:var(--acc)"></i>${c.lbl}
+        ${c.val?'<span style="font-size:9px;background:rgba(34,197,94,.12);color:var(--G400);border:1px solid rgba(34,197,94,.3);border-radius:99px;padding:1px 7px;margin-left:6px;font-weight:700">IA</span>':'<span style="font-size:9px;color:var(--muted);margin-left:6px">não detectado</span>'}
+      </div>
+      <input type="text" class="inp" id="${c.id}" value="${c.val.replace(/"/g,'&quot;')}" placeholder="Não detectado">
+    </div>`).join('');
+  abrirModal('modal-revisao');
+}
+function confirmarRevisao(){
+  const get=id=>(document.getElementById(id)?.value||'').trim();
+  const tipos=['Citação','Intimação','Penhora','Busca e Apreensão','Avaliação','Outro'];
+  const tv=get('rv-tipo');
+  document.getElementById('f-proc').value=get('rv-proc');
+  document.getElementById('f-tipo').value=tipos.includes(tv)?tv:'Outro';
+  document.getElementById('f-parte').value=get('rv-parte');
+  document.getElementById('f-end').value=get('rv-end');
+  document.getElementById('f-tel').value=get('rv-tel');
+  document.getElementById('f-wpp').value=get('rv-wpp');
+  document.getElementById('f-obs').value=get('rv-obs');
+  fecharModal('modal-revisao');
+  toast('✓ Dados aplicados','ok');
+  document.getElementById('novo-form').scrollIntoView({behavior:'smooth'});
+}
+
+function salvarMandado(){
+  const proc=document.getElementById('f-proc').value.trim();
+  const parte=document.getElementById('f-parte').value.trim();
+  if(!proc||!parte){toast('Processo e Parte são obrigatórios','warn');return}
+  const m={
+    id:uid(),proc,parte,
+    tipo:document.getElementById('f-tipo').value,
+    endereco:document.getElementById('f-end').value.trim(),
+    telefone:document.getElementById('f-tel').value.trim(),
+    whatsapp:document.getElementById('f-wpp').value.trim(),
+    obs:document.getElementById('f-obs').value.trim(),
+    modalidade:novaModalidade,
+    etapa:'aguardando',dtAguardando:agora(),
+    resultado:null,motivoNeg:null,doc:null,assin:null,
+    pje:false,pjeData:'',partes:[],certidao:'',
+    atendLog:[],criadoEm:agora(),atualizadoEm:agora()
+  };
+  DB.mandados.unshift(m);
+  adicionarHistorico({tipo:'ia',titulo:'Mandado cadastrado',detalhe:`${m.tipo} — ${m.parte}`,mandadoId:m.id});
+  salvarDB();fecharModal('modal-novo');renderHome();toast('Mandado salvo!','ok');
+}
+
+/* ════════════════════════════════════════
+   FLUXO VISUAL
+════════════════════════════════════════ */
+function calcEtapa(m){
+  if(m.pje)return 3;
+  if(m.resultado==='positivo'||m.resultado==='negativo')return 2;
+  if(m.etapa==='em_cumprimento')return 2;
+  if(m.etapa==='aguardando')return 1;
+  return 0;
+}
+
+function renderFluxo(m){
+  const etapa=calcEtapa(m);
+  const pct=[0,33,66,100][Math.min(etapa,3)];
+  const steps=[
+    {icon:'fa-file-circle-plus',lbl:'Início',data:m.criadoEm||''},
+    {icon:'fa-clock',lbl:'Aguardando',data:m.dtAguardando||''},
+    {icon:'fa-person-walking',lbl:'Em cumprimento',data:m.dtCumprindo||''},
+    {icon:'fa-flag-checkered',lbl:'Finalizado Ok',data:m.pjeData||''},
+  ];
+  const statusInfo=[
+    {txt:'Mandado cadastrado',cor:'var(--G400)',icon:'fa-file-circle-plus'},
+    {txt:'Aguardando cumprimento',cor:'var(--amber)',icon:'fa-clock'},
+    {txt:'Diligência em andamento',cor:'#fb923c',icon:'fa-person-walking'},
+    {txt:'Concluído e juntado no PJe',cor:'var(--G300)',icon:'fa-flag-checkered'},
+  ][etapa]||{txt:'Início',cor:'var(--G400)',icon:'fa-file-circle-plus'};
+
+  const stepsHtml=steps.map((s,i)=>{
+    let cls='fs-pend';
+    if(i<etapa)cls='fs-done';
+    else if(i===etapa)cls=(i===3&&etapa===3)?'fs-final':'fs-active';
+    if(etapa===3&&i===3)cls='fs-final';
+    const tick=i<etapa?'<div class="fs-tick"><i class="fa fa-check"></i></div>':'';
+    return `<div class="fluxo-step ${cls}" onclick="avancarEtapa(${i})">
+      <div class="fs-circle"><i class="fa ${s.icon}"></i>${tick}</div>
+      <div class="fs-lbl">${s.lbl}</div>
+      ${s.data?`<div class="fs-data">${s.data}</div>`:''}
+    </div>`;
+  }).join('');
+
+  return `<div class="fluxo-wrap">
+    <div class="fluxo-bar-bg"><div class="fluxo-bar-fill" style="width:${pct}%"></div></div>
+    <div class="fluxo-row">${stepsHtml}</div>
+    <div class="fluxo-status">
+      <div class="fluxo-status-txt" style="color:${statusInfo.cor}"><i class="fa ${statusInfo.icon}"></i>${statusInfo.txt}</div>
+      <div class="fluxo-pct">${pct}%</div>
+    </div>
+  </div>`;
+}
+
+function avancarEtapa(idx){
+  const m=getMandado(mandadoAtivo);if(!m)return;
+  const atual=calcEtapa(m);
+  if(idx<=atual){toast('Etapa já concluída ✓','info');return}
+  if(idx>atual+1){toast('Conclua a etapa anterior primeiro','warn');return}
+  const nomes=['Início','Aguardando','Em cumprimento','Finalizado Ok'];
+  if(idx===1){m.etapa='aguardando';m.dtAguardando=agora();toast('Etapa: Aguardando','info')}
+  else if(idx===2){m.etapa='em_cumprimento';m.dtCumprindo=agora();toast('Etapa: Em cumprimento','info')}
+  else if(idx===3){
+    if(!m.resultado){toast('Registre o resultado do cumprimento primeiro','warn');return}
+    if(!m.certidao){toast('Gere a certidão antes de finalizar','warn');return}
+    m.pje=true;m.pjeData=agora();toast('Finalizado Ok! 🎉','ok');
+  }
+  m.atualizadoEm=agora();salvarDB();
+  adicionarHistorico({tipo:idx===3?'pje':'ia',titulo:'Etapa avançada: '+nomes[idx],detalhe:m.proc,mandadoId:m.id});
+  document.getElementById('det-fluxo').innerHTML=renderFluxo(m);renderHome();
+}
+
+function renderProgressBar(m){
+  const etapa=calcEtapa(m);
+  const steps=[
+    {lbl:'Início',done:true},
+    {lbl:'Aguardando',done:etapa>=1},
+    {lbl:'Cumprindo',done:etapa>=2},
+    {lbl:'Finalizado',done:etapa>=3,isPje:true},
+  ];
+  return steps.map((s,i)=>{
+    const isActive=(i===steps.findIndex(x=>!x.done));
+    const cls=s.isPje&&s.done?'pje':s.done?'done':(isActive?'active':'');
+    const icon=s.done?'fa-check':(s.isPje?'fa-flag-checkered':'');
+    return `<div class="ep ${cls}"><div class="ep-dot">${icon?`<i class="fa ${icon}"></i>`:''}</div><div class="ep-lbl">${s.lbl}</div></div>`;
+  }).join('');
+}
+
+/* ════════════════════════════════════════
+   RENDER LISTAS
+════════════════════════════════════════ */
+function getMandado(id){return DB.mandados.find(m=>m.id===id)}
+function etapaClass(m){
+  if(m.pje||m.resultado==='positivo')return 'ei-ok';
+  if(m.resultado==='negativo')return 'ei-neg';
+  if(m.modalidade==='eletronico')return 'ei-el';
+  return 'ei-pr';
+}
+function pillEtapa(m){
+  if(m.pje)return '<span class="pill pill-p"><i class="fa fa-gavel"></i>PJe</span>';
+  if(m.resultado==='positivo')return '<span class="pill pill-g"><i class="fa fa-check"></i>Positivo</span>';
+  if(m.resultado==='negativo')return '<span class="pill pill-r"><i class="fa fa-xmark"></i>Negativo</span>';
+  if(m.modalidade==='eletronico')return '<span class="pill pill-g"><i class="fa fa-mobile-screen"></i>Eletrônico</span>';
+  return '<span class="pill pill-a"><i class="fa fa-person-walking"></i>Presencial</span>';
+}
+function renderMandadoItem(m){
+  return `<div class="mand-item ${etapaClass(m)}" onclick="abrirDetalhe('${m.id}')">
+    <div class="mi-top"><div class="mi-nome">${m.parte}</div><div class="mi-badges">${pillEtapa(m)}<span class="pill pill-gr">${m.tipo}</span></div></div>
+    <div class="mi-proc">${m.proc}</div>
+    ${m.endereco?`<div class="mi-end"><i class="fa fa-location-dot"></i>${m.endereco}</div>`:''}
+    <div class="etapa-track">${renderProgressBar(m)}</div>
+  </div>`;
+}
+function mandadosFiltrados(){
+  return DB.mandados.filter(m=>{
+    const q=textoFiltro.toLowerCase();
+    const mq=!q||m.parte.toLowerCase().includes(q)||m.proc.toLowerCase().includes(q)||(m.endereco||'').toLowerCase().includes(q);
+    let mf=true;
+    if(filtroAtivo==='eletronico')mf=m.modalidade==='eletronico';
+    if(filtroAtivo==='presencial')mf=m.modalidade==='presencial';
+    if(filtroAtivo==='pendente')mf=!m.resultado&&!m.pje;
+    if(filtroAtivo==='concluido')mf=m.resultado==='positivo'||m.pje;
+    if(filtroAtivo==='negativo')mf=m.resultado==='negativo';
+    return mq&&mf;
+  });
+}
+function renderHome(){
+  document.getElementById('st-total').textContent=DB.mandados.length;
+  document.getElementById('st-pend').textContent=DB.mandados.filter(m=>!m.resultado&&!m.pje).length;
+  document.getElementById('st-ok').textContent=DB.mandados.filter(m=>m.resultado==='positivo'||m.pje).length;
+  document.getElementById('st-pje').textContent=DB.mandados.filter(m=>m.pje).length;
+  const l=document.getElementById('home-list'),e=document.getElementById('home-empty');
+  const rec=DB.mandados.slice(0,5);
+  if(!rec.length){l.innerHTML='';e.style.display='block'}
+  else{e.style.display='none';l.innerHTML=rec.map(renderMandadoItem).join('')}
+}
+function renderMandados(){
+  const l=document.getElementById('mand-list'),e=document.getElementById('mand-empty');
+  const items=mandadosFiltrados();
+  if(!items.length){l.innerHTML='';e.style.display='block'}
+  else{e.style.display='none';l.innerHTML=items.map(renderMandadoItem).join('')}
+}
+function filtrar(){textoFiltro=document.getElementById('search-inp').value;renderMandados()}
+function setFiltro(f,el){filtroAtivo=f;document.querySelectorAll('.fchip').forEach(c=>c.classList.remove('active'));el.classList.add('active');renderMandados()}
+
+/* ════════════════════════════════════════
+   BUSCA IA
+════════════════════════════════════════ */
+async function buscarIA(){
+  const k=getApiKey();if(!k)return;
+  const q=document.getElementById('search-inp').value.trim();
+  if(!q){toast('Digite o que buscar','warn');return}
+  toast('Buscando com IA…','info');
+  try{
+    const lista=DB.mandados.map(m=>`ID:${m.id}|PARTE:${m.parte}|PROC:${m.proc}|TIPO:${m.tipo}`).join('\n');
+    const data=await _fetchAnthropic({model:'claude-sonnet-4-20250514',max_tokens:300,system:'Retorne IDs relevantes em JSON puro: {"ids":["id1"]}. Responda APENAS com JSON.',messages:[{role:'user',content:`Mandados:\n${lista}\nConsulta: ${q}`}]},k);
+    const {ids}=JSON.parse((data.content?.[0]?.text||'').replace(/```json|```/g,'').trim());
+    const enc=DB.mandados.filter(m=>ids.includes(m.id));
+    const l=document.getElementById('mand-list'),e=document.getElementById('mand-empty');
+    if(!enc.length){l.innerHTML='';e.style.display='block'}
+    else{e.style.display='none';l.innerHTML=enc.map(renderMandadoItem).join('')}
+    toast(`IA encontrou ${enc.length} resultado(s)`,'ok');
+  }catch(e){toast('Erro busca IA: '+e.message.slice(0,40),'err')}
+}
+
+/* ════════════════════════════════════════
+   DETALHE MANDADO
+════════════════════════════════════════ */
+function abrirDetalhe(id){
+  mandadoAtivo=id;
+  atendHistory=[];
+  const m=getMandado(id);if(!m)return;
+  document.getElementById('det-title').textContent=m.parte;
+  document.getElementById('det-proc').textContent=m.proc+' · '+m.tipo;
+  document.getElementById('det-fluxo').innerHTML=renderFluxo(m);
+  // badge de modalidade no header (pill clicável)
+  const isEl=m.modalidade==='eletronico';
+  const modBtn=document.getElementById('det-mod-btn');
+  if(modBtn){
+    modBtn.className=isEl?'pill pill-g':'pill pill-a';
+    modBtn.style.cssText='font-size:10px;padding:4px 10px;cursor:pointer;border:none';
+    modBtn.innerHTML=isEl?'<i class="fa fa-mobile-screen"></i> Eletrônico':'<i class="fa fa-person-walking"></i> Presencial';
+  }
+  // certidão
+  document.getElementById('cert-txt').value=m.certidao||'';
+  document.getElementById('cert-txt').readOnly=true;
+  document.getElementById('cert-edit-bar').style.display='none';
+  const pw=document.getElementById('pje-status-wrap');const pd=document.getElementById('pje-data');
+  if(pw)pw.style.display=m.pje?'block':'none';
+  if(pd&&m.pjeData)pd.textContent='Juntado em '+m.pjeData;
+  // badge resultado (se já tem)
+  const rb=document.getElementById('det-resultado-badge');
+  if(rb){
+    if(m.resultado){
+      rb.style.display='block';
+      const isPos=m.resultado==='positivo';
+      rb.innerHTML=`<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:${isPos?'rgba(34,197,94,.1)':'rgba(248,113,113,.1)'};border:1px solid ${isPos?'rgba(34,197,94,.25)':'rgba(248,113,113,.25)'};border-radius:var(--r-sm)">
+        <i class="fa ${isPos?'fa-circle-check':'fa-circle-xmark'}" style="color:${isPos?'var(--G400)':'var(--red)'}"></i>
+        <span style="font-size:12px;font-weight:700;color:${isPos?'var(--G400)':'var(--red)'}">Resultado: ${isPos?'Positivo — Cumprido':'Negativo'}</span>
+        ${m.certidao?'<span class="pill pill-g" style="margin-left:auto;font-size:9px"><i class="fa fa-scroll"></i> Certidão ok</span>':''}
+      </div>`;
+    }else{rb.style.display='none';}
+  }
+  // chat: só reiniciar se não tiver resultado ainda
+  if(!m.resultado){iniciarAtendimento(m);}
+  else{
+    // mostrar resumo do atendimento já concluído
+    const box=document.getElementById('atend-msgs');
+    box.innerHTML='';
+    appendAtendMsg('bot','Atendimento concluído. Resultado: '+m.resultado+'. '+(m.certidao?'Certidão gerada.':'Certidão não gerada ainda.'));
+    document.getElementById('opts-chips').style.display='none';
+  }
+  document.getElementById('btn-gerar-cert').style.display=m.resultado?'flex':'none';
+  setTab(0,document.querySelector('#det-tabs .tab-btn'));
+  initTabSlider();
+  abrirModal('modal-detalhe');
+}
+
+function trocarModalidade(){
+  const m=getMandado(mandadoAtivo);if(!m)return;
+  m.modalidade=m.modalidade==='eletronico'?'presencial':'eletronico';
+  m.atualizadoEm=agora();salvarDB();
+  fecharModal('modal-detalhe');setTimeout(()=>abrirDetalhe(mandadoAtivo),160);
+  toast(`Modalidade: ${m.modalidade}`,'info');
+}
+
+/* ════════════════════════════════════════
+   ASSISTENTE DE ATENDIMENTO IA
+════════════════════════════════════════ */
+function iniciarAtendimento(m){
+  const box=document.getElementById('atend-msgs');
+  box.innerHTML='';
+  atendHistory=[];
+  const isEl=m.modalidade==='eletronico';
+  // Mensagem inicial com contexto
+  const intro=isEl
+    ?`Olá! Vou orientar o atendimento eletrônico do mandado de **${m.tipo}** para **${m.parte}**.\n\nComo foi a tentativa de contato via WhatsApp?`
+    :`Olá! Vou orientar a diligência presencial para **${m.tipo}** — **${m.parte}**.\n\nEndereço: ${m.endereco||'não informado'}.\n\nQual foi o resultado da diligência?`;
+  const optsEl=['✅ Citado/Intimado — respondeu','📄 Enviou documento','❌ Não atendeu / sem resposta','🚫 Recusou receber','📵 Número inválido/inexistente'];
+  const optsPr=['✅ Cumprido — pessoa encontrada','🚪 Ausente — não estava','🏠 Mudou-se / não reside mais','🚫 Recusou receber','❓ Endereço não localizado'];
+  appendAtendMsg('bot',intro);
+  // adicionar intro ao histórico para a API receber contexto correto
+  atendHistory.push({role:'user',content:'Iniciar atendimento.'},{role:'assistant',content:intro});
+  mostrarOpts(isEl?optsEl:optsPr);
+}
+
+function appendAtendMsg(role,text,isTyping=false){
+  const box=document.getElementById('atend-msgs');
+  const id=uid();
+  const isBot=role==='bot';
+  const avatarHtml=isBot
+    ?'<div class="atend-avatar bot"><i class="fa fa-comments"></i></div>'
+    :'<div class="atend-avatar user"><i class="fa fa-user"></i></div>';
+  const bubbleStyle=isBot
+    ?'background:var(--surf2);border:1px solid var(--border);border-radius:14px;border-top-left-radius:4px;padding:10px 13px;font-size:13px;line-height:1.55;max-width:85%;white-space:pre-wrap'
+    :'background:linear-gradient(135deg,var(--G600),var(--G700));color:#fff;border-radius:14px;border-top-right-radius:4px;padding:10px 13px;font-size:13px;line-height:1.55;max-width:85%';
+  const content=isTyping?'<span>●</span><span>●</span><span>●</span>':(text||'');
+  box.innerHTML+=`<div class="atend-msg ${role}" style="display:flex;gap:8px;animation:msgIn .2s ease;${role==='user'?'flex-direction:row-reverse':''}" id="${id}">
+    ${avatarHtml}
+    <div class="${isTyping?'atend-typing':''}" style="${bubbleStyle}" id="b${id}">${content}</div>
+  </div>`;
+  box.scrollTop=box.scrollHeight;
+  return id;
+}
+
+function updateAtendMsg(id,text){
+  const b=document.getElementById('b'+id);
+  if(b){b.innerHTML=text;b.classList.remove('atend-typing')}
+  document.getElementById('atend-msgs').scrollTop=99999;
+}
+
+function mostrarOpts(opts){
+  const el=document.getElementById('opts-chips');
+  if(!opts||!opts.length){el.style.display='none';el.innerHTML='';return}
+  el.style.display='flex';
+  el.innerHTML=opts.map(o=>`<div class="opt-chip" onclick="selecionarOpt(this,'${o.replace(/'/g,'\\\'')}')">${o}</div>`).join('');
+}
+
+function selecionarOpt(el,texto){
+  const container=document.getElementById('opts-chips');
+  if(container)container.querySelectorAll('.opt-chip').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  setTimeout(()=>processarAtend(texto),150);
+}
+
+async function enviarAtend(){
+  const inp=document.getElementById('atend-inp');
+  const msg=inp.value.trim();if(!msg)return;
+  inp.value='';
+  processarAtend(msg);
+}
+
+async function processarAtend(input){
+  const k=getApiKey();if(!k)return;
+  const m=getMandado(mandadoAtivo);if(!m)return;
+  appendAtendMsg('user',input);
+  atendHistory.push({role:'user',content:input});
+  mostrarOpts([]);
+  const tid=appendAtendMsg('bot',null,true);
+  document.getElementById('atend-send').disabled=true;
+  const isEl=m.modalidade==='eletronico';
+  const sys=`Você é o assistente IA de um Oficial de Justiça (${DB.configs.nome||'Oficial'}, ${DB.configs.zona||'Zona 07'}).
+Está orientando o cumprimento de ${m.tipo} para ${m.parte} (Processo: ${m.proc}).
+Modalidade: ${isEl?'Eletrônico (WhatsApp)':'Presencial (campo)'}.
+Endereço: ${m.endereco||'não informado'}.
+Telefone: ${m.telefone||'não informado'}. WhatsApp: ${m.whatsapp||'não informado'}.
+
+Faça perguntas objetivas e curtas para coletar as informações necessárias para a certidão.
+Ao final, quando tiver todas as informações (resultado, motivo se negativo, detalhes relevantes), diga exatamente: "ATENDIMENTO_CONCLUIDO" na última linha.
+Após cada resposta, se precisar de mais dados, sugira 2-4 opções rápidas em JSON ao final (apenas quando necessário):
+OPTS:["opção1","opção2"]
+Seja direto e profissional. Máximo 3 trocas de mensagens.`;
+
+  try{
+    const data=await _fetchAnthropic({model:'claude-sonnet-4-20250514',max_tokens:600,system:sys,messages:atendHistory.slice(-6)},k);
+    let reply=(data.content?.[0]?.text||'').trim();
+    // extrair opts
+    let opts=[];
+    const optsMatch=reply.match(/OPTS:\[([^\]]+)\]/);
+    if(optsMatch){
+      try{opts=JSON.parse('['+optsMatch[1]+']')}catch(e){}
+      reply=reply.replace(/OPTS:\[([^\]]+)\]/,'').trim();
+    }
+    // checar conclusão
+    const concluido=reply.includes('ATENDIMENTO_CONCLUIDO');
+    reply=reply.replace('ATENDIMENTO_CONCLUIDO','').trim();
+    // detectar resultado
+    const inputLower=input.toLowerCase();
+    if(inputLower.includes('citad')||inputLower.includes('intimad')||inputLower.includes('cumprido')||inputLower.includes('encontrad')||inputLower.includes('positiv')){
+      m.resultado='positivo';if(!m.dtCumprindo){m.etapa='em_cumprimento';m.dtCumprindo=agora()}
+    }else if(inputLower.includes('negativ')||inputLower.includes('ausente')||inputLower.includes('recusou')||inputLower.includes('mudou')||inputLower.includes('não localiz')||inputLower.includes('sem resposta')||inputLower.includes('inválid')){
+      m.resultado='negativo';if(!m.dtCumprindo){m.etapa='em_cumprimento';m.dtCumprindo=agora()}
+    }
+    // salvar log
+    if(!m.atendLog)m.atendLog=[];
+    m.atendLog.push({role:'user',txt:input,ts:agora()},{role:'bot',txt:reply,ts:agora()});
+    m.atualizadoEm=agora();salvarDB();
+    atendHistory.push({role:'assistant',content:reply});
+    updateAtendMsg(tid,reply);
+    if(opts.length)mostrarOpts(opts);
+    if(concluido||m.resultado){
+      mostrarOpts([]);
+      document.getElementById('btn-gerar-cert').style.display='flex';
+      document.getElementById('det-fluxo').innerHTML=renderFluxo(m);
+      adicionarHistorico({tipo:m.resultado==='positivo'?'ok':'neg',titulo:`Resultado: ${m.resultado}`,detalhe:`${m.tipo} — ${m.parte}`,mandadoId:m.id});
+      renderHome();
+    }
+  }catch(e){
+    updateAtendMsg(tid,'Erro ao contatar IA: '+e.message.slice(0,50));
+  }finally{
+    document.getElementById('atend-send').disabled=false;
+  }
+}
+
+function limparChatAtend(){
+  const m=getMandado(mandadoAtivo);if(!m)return;
+  iniciarAtendimento(m);
+}
+
+/* ════════════════════════════════════════
+   CERTIDÃO IA
+════════════════════════════════════════ */
+async function gerarCertidaoIrParaCert(){
+  await gerarCertidaoAtend();
+  // ir para a aba de certidão após gerar
+  const btns=document.querySelectorAll('#det-tabs .tab-btn');
+  if(btns[1])setTab(1,btns[1]);
+}
+async function gerarCertidaoAtend(){
+  const k=getApiKey();if(!k)return;
+  const m=getMandado(mandadoAtivo);if(!m)return;
+  const spin=document.getElementById('cert-spin');
+  const btn=document.getElementById('btn-gerar-cert');
+  if(spin)spin.style.display='inline-block';
+  if(btn)btn.disabled=true;
+  // ir para tab certidão
+  setTab(1,document.querySelectorAll('#det-tabs .tab-btn')[1]);
+  const ta=document.getElementById('cert-txt');
+  ta.value='Gerando certidão com IA…';ta.readOnly=true;
+  try{
+    const isEl=m.modalidade==='eletronico';
+    const log=m.atendLog?m.atendLog.filter(l=>l.role==='user').map(l=>l.txt).join('; '):'';
+    const sys=`Você é ${DB.configs.nome||'Oficial de Justiça'} do TJMT, ${DB.configs.zona||'Zona 07'}.
+Elabore uma CERTIDÃO de ${m.tipo} em linguagem jurídica formal, no padrão TJMT.
+Inclua: data/hora, processo, partes, diligência realizada (modalidade), resultado detalhado e desfecho. Conciso mas completo. Máximo 25 linhas.`;
+    const prompt=`Processo: ${m.proc}
+Tipo: ${m.tipo}
+Parte: ${m.parte}
+Endereço: ${m.endereco||'não informado'}
+Modalidade: ${isEl?'Eletrônico (WhatsApp)':'Presencial (campo)'}
+Resultado: ${m.resultado||'não registrado'}
+Log do atendimento: ${log||'sem registro'}
+Data: ${agora()}
+Elabore a certidão completa.`;
+    const data=await _fetchAnthropic({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:[{role:'user',content:prompt}]},k);
+    const cert=(data.content?.[0]?.text||'').trim();
+    ta.value=cert;ta.readOnly=true;
+    m.certidao=cert;m.atualizadoEm=agora();salvarDB();
+    const fl=document.getElementById('det-fluxo');if(fl)fl.innerHTML=renderFluxo(m);
+    // mostrar conteúdo da certidão, esconder estado vazio
+    const cv=document.getElementById('cert-vazia');const cc=document.getElementById('cert-conteudo');
+    if(cv)cv.style.display='none';if(cc)cc.style.display='block';
+    adicionarHistorico({tipo:'cert',titulo:'Certidão gerada pela IA',detalhe:`Processo ${m.proc} — ${m.resultado}`,mandadoId:m.id});
+    toast('Certidão gerada!','ok');renderHome();
+  }catch(e){ta.value='';toast('Erro IA: '+e.message.slice(0,40),'err')}
+  if(spin)spin.style.display='none';if(btn)btn.disabled=false;
+}
+
+function editarCertidao(){
+  const ta=document.getElementById('cert-txt');
+  const bar=document.getElementById('cert-edit-bar');
+  ta.readOnly=false;ta.focus();
+  if(bar)bar.style.display='flex';
+  certEditando=true;toast('Edição habilitada','info');
+}
+function salvarEdicaoCert(){
+  const m=getMandado(mandadoAtivo);if(!m)return;
+  m.certidao=document.getElementById('cert-txt').value;
+  m.atualizadoEm=agora();salvarDB();
+  document.getElementById('cert-txt').readOnly=true;
+  document.getElementById('cert-edit-bar').style.display='none';
+  certEditando=false;
+  adicionarHistorico({tipo:'cert',titulo:'Certidão editada manualmente',detalhe:'',mandadoId:m.id});
+  toast('Certidão salva','ok');
+}
+function cancelarEdicaoCert(){
+  const m=getMandado(mandadoAtivo);if(!m)return;
+  document.getElementById('cert-txt').value=m.certidao||'';
+  document.getElementById('cert-txt').readOnly=true;
+  document.getElementById('cert-edit-bar').style.display='none';
+  certEditando=false;
+}
+function copiarCertidao(){
+  const txt=document.getElementById('cert-txt').value;
+  if(!txt){toast('Nenhuma certidão para copiar','warn');return}
+  navigator.clipboard.writeText(txt).catch(()=>{const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove()});
+  toast('Certidão copiada!','ok');
+}
+async function copiarEJuntar(){
+  const txt=document.getElementById('cert-txt').value.trim();
+  if(!txt){toast('Gere a certidão antes','warn');return}
+  const btn=document.getElementById('btn-copiar-pje');
+  const spin=document.getElementById('pje-spin');
+  btn.disabled=true;spin.style.display='inline-block';
+  try{await navigator.clipboard.writeText(txt)}catch{const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove()}
+  const m=getMandado(mandadoAtivo);
+  if(m){m.pje=true;m.pjeData=agora();m.atualizadoEm=agora();salvarDB();
+    const w=document.getElementById('pje-status-wrap');const d=document.getElementById('pje-data');
+    if(w)w.style.display='block';if(d)d.textContent='Copiado e juntado em '+m.pjeData;
+    document.getElementById('det-fluxo').innerHTML=renderFluxo(m);
+    adicionarHistorico({tipo:'pje',titulo:'Certidão copiada e juntada no PJe',detalhe:'Processo '+m.proc,mandadoId:m.id});
+    renderHome();
+  }
+  spin.style.display='none';btn.disabled=false;
+  const orig=btn.innerHTML;
+  btn.innerHTML='<i class="fa fa-circle-check"></i> Copiado! Cole no PJe (Ctrl+V)';
+  btn.style.background='linear-gradient(135deg,var(--G600),var(--G800))';
+  setTimeout(()=>{btn.innerHTML=orig;btn.style.background=''},4000);
+  toast('Copiado! Cole no PJe (Ctrl+V / colar)','ok',5000);
+}
+function marcarPje(){
+  const m=getMandado(mandadoAtivo);if(!m)return;
+  if(!m.certidao){toast('Gere a certidão antes','warn');return}
+  m.pje=true;m.pjeData=agora();m.atualizadoEm=agora();salvarDB();
+  document.getElementById('det-fluxo').innerHTML=renderFluxo(m);
+  const w=document.getElementById('pje-status-wrap');const d=document.getElementById('pje-data');
+  if(w)w.style.display='block';if(d)d.textContent='Juntado em '+m.pjeData;
+  adicionarHistorico({tipo:'pje',titulo:'Juntado no PJe',detalhe:'Processo '+m.proc,mandadoId:m.id});
+  toast('Marcado no PJe!','ok');renderHome();
+}
+
+/* ════════════════════════════════════════
+   VOZ (Web Speech API)
+════════════════════════════════════════ */
+function toggleGravacao(){
+  const btn=document.getElementById('btn-mic');
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){toast('Reconhecimento de voz não suportado neste navegador','warn');return}
+  if(micGravando){
+    if(micRec)micRec.stop();
+    micGravando=false;btn.classList.remove('gravando');btn.innerHTML='<i class="fa fa-microphone"></i>';
+    return;
+  }
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  micRec=new SR();micRec.lang='pt-BR';micRec.continuous=false;micRec.interimResults=false;
+  micRec.onresult=e=>{
+    const txt=e.results[0][0].transcript;
+    document.getElementById('atend-inp').value=txt;
+    toast('Voz capturada: '+txt.slice(0,40),'info');
+  };
+  micRec.onerror=e=>{toast('Erro microfone: '+e.error,'warn')};
+  micRec.onend=()=>{micGravando=false;btn.classList.remove('gravando');btn.innerHTML='<i class="fa fa-microphone"></i>'};
+  micRec.start();
+  micGravando=true;btn.classList.add('gravando');btn.innerHTML='<i class="fa fa-stop"></i>';
+  toast('Gravando… fale agora','info');
+}
+
+/* ════════════════════════════════════════
+   PARTES
+════════════════════════════════════════ */
+function renderPartes(){
+  const m=getMandado(mandadoAtivo);if(!m)return;
+  const el=document.getElementById('partes-list');
+  const principal=`<div class="parte-card">
+    <div class="parte-nome">${m.parte}</div><div class="parte-tipo">Parte principal · ${m.tipo}</div>
+    <div class="parte-contatos">
+      ${m.telefone?`<div class="contato-row"><div class="contato-icon" style="color:var(--G400)"><i class="fa fa-phone"></i></div><div class="contato-val">${m.telefone}</div></div>`:''}
+      ${m.whatsapp?`<div class="contato-row"><div class="contato-icon" style="color:var(--G400)"><i class="fab fa-whatsapp"></i></div><div class="contato-val">${m.whatsapp}</div><button class="btn-wpp" onclick="wppNum('${m.whatsapp}')">Enviar</button></div>`:''}
+      ${m.endereco?`<div class="contato-row"><div class="contato-icon" style="color:var(--amber)"><i class="fa fa-location-dot"></i></div><div class="contato-val" style="font-family:var(--font)">${m.endereco}</div></div>`:''}
+    </div>
+  </div>`;
+  const extras=(m.partes||[]).map(p=>`<div class="parte-card">
+    <div class="parte-nome">${p.nome}</div><div class="parte-tipo">${p.tipo}</div>
+    <div class="parte-contatos">
+      ${p.tel?`<div class="contato-row"><div class="contato-icon" style="color:var(--G400)"><i class="fa fa-phone"></i></div><div class="contato-val">${p.tel}</div></div>`:''}
+      ${p.wpp?`<div class="contato-row"><div class="contato-icon" style="color:var(--G400)"><i class="fab fa-whatsapp"></i></div><div class="contato-val">${p.wpp}</div><button class="btn-wpp" onclick="wppNum('${p.wpp}')">Enviar</button></div>`:''}
+      ${p.end?`<div class="contato-row"><div class="contato-icon" style="color:var(--amber)"><i class="fa fa-location-dot"></i></div><div class="contato-val" style="font-family:var(--font)">${p.end}</div></div>`:''}
+    </div>
+  </div>`).join('');
+  el.innerHTML=principal+extras;
+}
+function wppNum(num){window.open(`https://wa.me/55${num.replace(/\D/g,'')}`,`_blank`)}
+function adicionarParte(){abrirModal('modal-parte')}
+function salvarParte(){
+  const nome=document.getElementById('p-nome').value.trim();if(!nome){toast('Nome obrigatório','warn');return}
+  const m=getMandado(mandadoAtivo);if(!m)return;
+  if(!m.partes)m.partes=[];
+  m.partes.push({nome,tipo:document.getElementById('p-tipo').value,tel:document.getElementById('p-tel').value.trim(),wpp:document.getElementById('p-wpp').value.trim(),end:document.getElementById('p-end').value.trim()});
+  m.atualizadoEm=agora();salvarDB();fecharModal('modal-parte');renderPartes();toast('Parte adicionada!','ok');
+  ['p-nome','p-tel','p-wpp','p-end'].forEach(id=>document.getElementById(id).value='');
+}
+
+/* ════════════════════════════════════════
+   MAPS / TEL
+════════════════════════════════════════ */
+function abrirMaps(){const m=getMandado(mandadoAtivo);if(!m||!m.endereco)return;window.open(`https://maps.google.com/?q=${encodeURIComponent(m.endereco+', Cuiabá, MT')}`,`_blank`)}
+
+/* ════════════════════════════════════════
+   HISTÓRICO
+════════════════════════════════════════ */
+function adicionarHistorico(item){
+  DB.historico.unshift({...item,ts:agora(),id:uid()});
+  if(DB.historico.length>200)DB.historico=DB.historico.slice(0,200);
+  salvarDB();
+}
+const tlIcons={ok:'fa-check',neg:'fa-xmark',wpp:'fa-whatsapp fab',cert:'fa-scroll',pje:'fa-gavel',ia:'fa-robot'};
+function renderTlItem(h){
+  return `<div class="tl-item"><div class="tl-dot ${h.tipo||'ia'}"><i class="fa ${tlIcons[h.tipo||'ia']||'fa-circle-info'}"></i></div><div class="tl-card"><div class="tl-titulo">${h.titulo||''}</div><div class="tl-hora">${h.ts||''}</div>${h.detalhe?`<div class="tl-detalhe">${h.detalhe}</div>`:''}</div></div>`;
+}
+function renderHistorico(){
+  const el=document.getElementById('hist-list');const e=document.getElementById('hist-empty');
+  if(!DB.historico.length){el.innerHTML='';e.style.display='block';return}
+  e.style.display='none';el.innerHTML=DB.historico.map(renderTlItem).join('');
+}
+function renderDetHistorico(){
+  const m=getMandado(mandadoAtivo);if(!m)return;
+  const items=DB.historico.filter(h=>h.mandadoId===m.id);
+  document.getElementById('det-hist').innerHTML=items.length?items.map(renderTlItem).join(''):'<div class="empty"><i class="fa fa-clock-rotate-left"></i><p>Sem ações ainda.</p></div>';
+}
+
+/* ════════════════════════════════════════
+   ASSISTENTE IA GERAL
+════════════════════════════════════════ */
+const aiHistory=[];
+let iaMandadoContexto=null; // mandado atualmente vinculado ao assistente
+
+/* serializa um mandado em texto para o system prompt */
+function serializarMandado(m){
+  if(!m) return '';
+  const log=(m.atendLog||[]).map(e=>`  [${e.ts||''}] ${e.role==='user'?'Oficial':'IA'}: ${e.text||''}`).join('\n');
+  return [
+    `=== MANDADO EM CONTEXTO ===`,
+    `Processo: ${m.proc||'—'}`,
+    `Tipo: ${m.tipo||'—'}`,
+    `Parte/Réu: ${m.parte||'—'}`,
+    `Endereço: ${m.endereco||'—'}`,
+    `Telefone: ${m.telefone||'—'}`,
+    `WhatsApp: ${m.whatsapp||'—'}`,
+    `Modalidade: ${m.modalidade||'—'}`,
+    `Etapa atual: ${m.etapa||'—'}`,
+    `Resultado: ${m.resultado||'não registrado'}`,
+    `Motivo negativo: ${m.motivoNeg||'—'}`,
+    `Certidão gerada: ${m.certidao?'Sim':'Não'}`,
+    `Juntado PJe: ${m.pje?'Sim ('+m.pjeData+')':'Não'}`,
+    `Observações: ${m.obs||'—'}`,
+    `Criado em: ${m.criadoEm||'—'}`,
+    log ? `\nLog de atendimento:\n${log}` : '',
+    m.certidao ? `\nCertidão atual:\n${m.certidao.slice(0,600)}${m.certidao.length>600?'...':''}` : '',
+    `=========================`,
+  ].filter(Boolean).join('\n');
+}
+
+/* Define o mandado ativo no assistente e atualiza o banner */
+function setIAMandadoContexto(m){
+  iaMandadoContexto = m;
+  const banner = document.getElementById('ia-mandado-banner');
+  const nome = document.getElementById('ia-banner-nome');
+  const proc = document.getElementById('ia-banner-proc');
+  if(m && banner){
+    nome.textContent = m.parte || '—';
+    proc.textContent = m.proc || '—';
+    banner.style.display = 'block';
+  } else if(banner){
+    banner.style.display = 'none';
+  }
+}
+
+function limparContextoMandado(){
+  setIAMandadoContexto(null);
+  aiHistory.length = 0;
+  toast('Contexto do mandado removido','info');
+}
+
+/* Abre a aba IA com o mandado ativo carregado */
+function abrirIAComMandado(){
+  const m = getMandado(mandadoAtivo);
+  if(!m){ toast('Nenhum mandado aberto','warn'); return; }
+  fecharModal('modal-detalhe');
+  setIAMandadoContexto(m);
+  aiHistory.length = 0;
+  // mensagem de boas-vindas contextual
+  const box = document.getElementById('ai-msgs');
+  if(box){
+    box.innerHTML = `<div style="display:flex;gap:8px">
+      <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--G500),var(--G700));display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;color:#fff"><i class="fa fa-comments"></i></div>
+      <div style="background:var(--surf2);border:1px solid var(--border);border-radius:14px;border-top-left-radius:4px;padding:10px 13px;font-size:13px;line-height:1.55;max-width:85%">
+        Contexto carregado: <strong style="color:var(--G400)">${m.parte}</strong><br>
+        <span style="font-size:11px;color:var(--muted)">${m.proc} · ${m.tipo}</span><br><br>
+        Use os atalhos acima ou pergunte qualquer coisa sobre este mandado.
+      </div></div>`;
+    box.scrollTop = box.scrollHeight;
+  }
+  navTo('ia');
+}
+
+/* Análise rápida por tipo */
+function analisarRapido(tipo){
+  const prompts = {
+    resumo: 'Faça um resumo objetivo deste mandado: situação atual, etapa, dados principais e próximos passos.',
+    estrategia: 'Com base nos dados e log de atendimento, sugira a melhor estratégia de cumprimento: horário ideal, abordagem, pontos de atenção.',
+    wpp: 'Redija uma mensagem de WhatsApp profissional e objetiva para intimar/citar esta parte. Use os dados do mandado.',
+    certidao: 'Com base nos dados e atendimento registrado, sugira o texto de uma certidão completa para este mandado.',
+    pendencias: 'Liste todas as pendências e obrigações ainda não cumpridas neste mandado, em ordem de prioridade.',
+  };
+  const msg = prompts[tipo];
+  if(!msg) return;
+  const inp = document.getElementById('ai-inp');
+  if(inp){ inp.value = msg; }
+  enviarMsgIA();
+}
+
+function addMsgIA(box, role, text, typing=false){
+  const id = uid();
+  const isBot = role === 'bot';
+  const avStyle = isBot
+    ? 'background:linear-gradient(135deg,var(--G500),var(--G700));color:#fff'
+    : 'background:var(--surf3);color:var(--text2)';
+  const bStyle = isBot
+    ? 'background:var(--surf2);border:1px solid var(--border);border-radius:14px;border-top-left-radius:4px;padding:10px 13px;font-size:13px;line-height:1.55;max-width:85%'
+    : 'background:linear-gradient(135deg,var(--G600),var(--G700));color:#fff;border-radius:14px;border-top-right-radius:4px;padding:10px 13px;font-size:13px;line-height:1.55;max-width:85%';
+  box.innerHTML += `<div style="display:flex;gap:8px;${isBot?'':'flex-direction:row-reverse'}" id="${id}">
+    <div style="width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;${avStyle}">
+      <i class="fa ${isBot?'fa-comments':'fa-user'}"></i>
+    </div>
+    <div style="${bStyle}" id="b${id}">${typing?'<span style="opacity:.5">···</span>':(text||'')}</div>
+  </div>`;
+  box.scrollTop = box.scrollHeight;
+  return id;
+}
+
+async function enviarMsgIA(){
+  const k=getApiKey();if(!k)return;
+  const inp=document.getElementById('ai-inp');
+  const msg=inp.value.trim();if(!msg)return;inp.value='';
+  const box=document.getElementById('ai-msgs');
+  addMsgIA(box,'user',msg);
+  aiHistory.push({role:'user',content:msg});
+  const tid=addMsgIA(box,'bot',null,true);
+  document.getElementById('ai-send').disabled=true;
+  // system prompt com contexto do mandado se houver
+  const mandCtx = iaMandadoContexto ? '\n\n'+serializarMandado(iaMandadoContexto) : '';
+  const sys = `Você é o assistente IA do sistema OJ Mandados (${DB.configs.zona||'Zona 07'}), Oficial: ${DB.configs.nome||'Oficial'}. Ajude com mandados, certidões, legislação processual e WhatsApp. Seja objetivo e prático.${mandCtx}`;
+  try{
+    const data=await _fetchAnthropic({model:'claude-sonnet-4-20250514',max_tokens:900,system:sys,messages:aiHistory.slice(-10)},k);
+    const reply=(data.content?.[0]?.text||'').trim();
+    document.getElementById('b'+tid).innerHTML=reply;
+    aiHistory.push({role:'assistant',content:reply});
+    if(iaMandadoContexto) adicionarHistorico({tipo:'ia',titulo:'Análise IA',detalhe:msg.slice(0,60),mandadoId:iaMandadoContexto.id});
+  }catch(e){document.getElementById('b'+tid).innerHTML='Erro: '+e.message.slice(0,60)}
+  document.getElementById('ai-send').disabled=false;
+}
+
+/* ════════════════════════════════════════
+   INIT
+════════════════════════════════════════ */
+carregarDB();
+renderHome();
+</script>
+</body>
+</html>
