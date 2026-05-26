@@ -1,0 +1,2085 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>OJ · Mandados</title>
+<meta name="theme-color" content="#16a34a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+<style>
+/* ═══════════════════════════════
+   TOKENS
+═══════════════════════════════ */
+:root {
+  --green-50:  #f0fdf4;
+  --green-100: #dcfce7;
+  --green-200: #bbf7d0;
+  --green-300: #86efac;
+  --green-400: #4ade80;
+  --green-500: #22c55e;
+  --green-600: #16a34a;
+  --green-700: #15803d;
+  --green-800: #166534;
+  --green-900: #14532d;
+
+  --bg:      #f0fdf4;
+  --surf:    #ffffff;
+  --surf2:   #f8fffe;
+  --border:  #d1fae5;
+  --border2: #a7f3d0;
+
+  --acc:     #16a34a;
+  --acc-h:   #15803d;
+  --acc-s:   rgba(22,163,74,.12);
+  --acc-glow:rgba(22,163,74,.20);
+
+  --text:    #14532d;
+  --text2:   #166534;
+  --muted:   #6b7280;
+  --muted2:  #9ca3af;
+
+  --red:     #ef4444;
+  --red-s:   rgba(239,68,68,.10);
+  --amber:   #f59e0b;
+  --amber-s: rgba(245,158,11,.10);
+  --blue:    #3b82f6;
+  --blue-s:  rgba(59,130,246,.10);
+  --purple:  #8b5cf6;
+  --purple-s:rgba(139,92,246,.10);
+
+  --font:  'DM Sans', system-ui, sans-serif;
+  --mono:  'DM Mono', monospace;
+
+  --topbar: 56px;
+  --nav:    64px;
+  --r:      16px;
+  --r-sm:   10px;
+  --r-xs:   6px;
+  --sh:     0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.04);
+  --sh-g:   0 4px 20px rgba(22,163,74,.18);
+  --sh-card:0 2px 8px rgba(0,0,0,.06);
+}
+
+/* ═══════════════════════════════
+   RESET
+═══════════════════════════════ */
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent }
+html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--text); font-family:var(--font); font-size:14px; -webkit-font-smoothing:antialiased }
+button { font-family:var(--font); cursor:pointer; border:none; background:none }
+input,textarea,select { font-family:var(--font); outline:none }
+::-webkit-scrollbar { width:3px; height:3px }
+::-webkit-scrollbar-thumb { background:var(--border2); border-radius:99px }
+
+/* ═══════════════════════════════
+   TOPBAR
+═══════════════════════════════ */
+#topbar {
+  position:fixed; top:0; left:0; right:0; height:var(--topbar);
+  background:var(--surf); border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 14px; z-index:100; box-shadow:0 1px 8px rgba(0,0,0,.06);
+  padding-top:env(safe-area-inset-top,0);
+}
+.tb-left { display:flex; align-items:center; gap:10px }
+.tb-logo {
+  width:36px; height:36px; border-radius:12px;
+  background:linear-gradient(135deg,var(--green-500),var(--green-700));
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; font-weight:800; color:#fff; letter-spacing:-.5px;
+  box-shadow:var(--sh-g);
+}
+.tb-title { font-size:17px; font-weight:800; color:var(--text); letter-spacing:-.5px }
+.tb-sub   { font-size:10px; color:var(--muted); font-weight:500; margin-top:-1px }
+.tb-right { display:flex; align-items:center; gap:6px }
+.tb-btn {
+  width:36px; height:36px; border-radius:var(--r-sm);
+  border:1.5px solid var(--border2); color:var(--acc);
+  display:flex; align-items:center; justify-content:center; font-size:15px;
+  background:var(--surf); transition:all .15s;
+}
+.tb-btn:active { background:var(--acc-s); transform:scale(.94) }
+
+/* ═══════════════════════════════
+   BOTTOM NAV
+═══════════════════════════════ */
+#bottomnav {
+  position:fixed; bottom:0; left:0; right:0; height:var(--nav);
+  background:var(--surf); border-top:1px solid var(--border);
+  display:flex; z-index:100; box-shadow:0 -2px 12px rgba(0,0,0,.05);
+  padding-bottom:env(safe-area-inset-bottom,0);
+}
+.nav-btn {
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:3px; color:var(--muted2); font-size:9px; font-weight:600;
+  text-transform:uppercase; letter-spacing:.4px; transition:all .2s; position:relative;
+}
+.nav-btn i { font-size:20px; transition:all .2s }
+.nav-btn::before {
+  content:''; position:absolute; top:0; left:50%; transform:translateX(-50%) scaleX(0);
+  width:28px; height:2.5px; background:var(--acc); border-radius:0 0 3px 3px;
+  transition:transform .25s cubic-bezier(.34,1.56,.64,1);
+}
+.nav-btn.active { color:var(--acc) }
+.nav-btn.active::before { transform:translateX(-50%) scaleX(1) }
+.nav-btn.active i { transform:translateY(-1px); color:var(--acc) }
+
+/* ═══════════════════════════════
+   VIEWS
+═══════════════════════════════ */
+#app { position:fixed; top:var(--topbar); bottom:var(--nav); left:0; right:0; overflow:hidden }
+.view { position:absolute; inset:0; overflow-y:auto; -webkit-overflow-scrolling:touch; display:none; opacity:0 }
+.view.active { display:block; animation:vIn .2s ease forwards }
+@keyframes vIn { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
+.vpad { padding:14px; padding-bottom:28px }
+
+/* ═══════════════════════════════
+   STATS
+═══════════════════════════════ */
+.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:20px }
+.stat-card {
+  background:var(--surf); border:1.5px solid var(--border);
+  border-radius:var(--r); padding:12px 8px; text-align:center;
+  box-shadow:var(--sh-card); position:relative; overflow:hidden;
+}
+.stat-card::after {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:var(--sc-c,var(--acc)); border-radius:3px 3px 0 0;
+}
+.stat-val { font-size:26px; font-weight:800; line-height:1; font-family:var(--mono); color:var(--sc-c,var(--acc)) }
+.stat-lbl { font-size:9px; color:var(--muted); margin-top:3px; text-transform:uppercase; letter-spacing:.5px; font-weight:600 }
+.sc-total  { --sc-c:var(--green-600) }
+.sc-pend   { --sc-c:var(--amber) }
+.sc-ok     { --sc-c:var(--green-500) }
+.sc-pje    { --sc-c:var(--purple) }
+
+/* ═══════════════════════════════
+   SECTION HEADER
+═══════════════════════════════ */
+.sec-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px }
+.sec-title { font-size:12px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:.7px }
+.sec-link  { font-size:12px; font-weight:600; color:var(--acc) }
+
+/* ═══════════════════════════════
+   MANDADO CARD
+═══════════════════════════════ */
+.mlist { display:flex; flex-direction:column; gap:8px }
+.mcard {
+  background:var(--surf); border:1.5px solid var(--border);
+  border-left:4px solid var(--mc-c,var(--border2));
+  border-radius:var(--r); padding:13px 13px 11px;
+  cursor:pointer; transition:all .12s; box-shadow:var(--sh-card);
+}
+.mcard:active { transform:scale(.985); background:var(--green-50) }
+.mc-top { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:4px }
+.mc-nome { font-size:13px; font-weight:700; color:var(--text); line-height:1.3; flex:1 }
+.mc-badges { display:flex; flex-direction:column; gap:3px; align-items:flex-end; flex-shrink:0 }
+.mc-proc { font-size:10px; color:var(--muted); font-family:var(--mono) }
+.mc-end  { font-size:11px; color:var(--text2); margin-top:4px; display:flex; align-items:center; gap:4px }
+.mc-end i { font-size:9px; color:var(--muted) }
+/* cores por tipo */
+.mc-el  { --mc-c:var(--green-500) }
+.mc-pr  { --mc-c:var(--amber) }
+.mc-ok  { --mc-c:var(--green-400); opacity:.85 }
+.mc-neg { --mc-c:var(--red) }
+.mc-pje { --mc-c:var(--purple) }
+
+/* ═══════════════════════════════
+   PROGRESS DOTS
+═══════════════════════════════ */
+.mtrack { display:flex; align-items:center; gap:0; margin-top:8px; padding:0 2px }
+.mstep  { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; position:relative }
+.mstep::after {
+  content:''; position:absolute; top:6px; left:50%; right:-50%;
+  height:1.5px; background:var(--border2); z-index:0;
+}
+.mstep:last-child::after { display:none }
+.mstep.s-done::after { background:var(--green-500) }
+.mdot {
+  width:13px; height:13px; border-radius:50%;
+  border:1.5px solid var(--border2); background:var(--bg);
+  display:flex; align-items:center; justify-content:center;
+  font-size:6px; z-index:1; position:relative; flex-shrink:0;
+}
+.mstep.s-done   .mdot { border-color:var(--green-500); background:var(--green-100); color:var(--green-600) }
+.mstep.s-active .mdot { border-color:var(--amber); background:rgba(245,158,11,.15); color:var(--amber); animation:pulse 2s infinite }
+.mstep.s-pje    .mdot { border-color:var(--purple); background:var(--purple-s); color:var(--purple) }
+.mlbl { font-size:7.5px; font-weight:600; color:var(--muted2); white-space:nowrap }
+@keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,.4)} 50%{box-shadow:0 0 0 4px rgba(245,158,11,0)} }
+
+/* ═══════════════════════════════
+   PILLS
+═══════════════════════════════ */
+.pill { display:inline-flex; align-items:center; gap:3px; font-size:9px; font-weight:700; padding:2px 8px; border-radius:99px; white-space:nowrap; letter-spacing:.2px }
+.pill-g  { background:rgba(34,197,94,.12); color:var(--green-700); border:1px solid rgba(34,197,94,.25) }
+.pill-a  { background:var(--amber-s);      color:#92400e;          border:1px solid rgba(245,158,11,.25) }
+.pill-r  { background:var(--red-s);        color:#991b1b;          border:1px solid rgba(239,68,68,.25) }
+.pill-p  { background:var(--purple-s);     color:#5b21b6;          border:1px solid rgba(139,92,246,.25) }
+.pill-b  { background:var(--blue-s);       color:#1d4ed8;          border:1px solid rgba(59,130,246,.25) }
+.pill-gr { background:var(--green-50);     color:var(--muted);     border:1px solid var(--border2) }
+
+/* ═══════════════════════════════
+   BUSCA + FILTROS
+═══════════════════════════════ */
+.search-bar { display:flex; align-items:center; gap:8px; margin-bottom:12px }
+.search-wrap { flex:1; position:relative }
+.search-ico  { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:13px }
+.search-inp  {
+  width:100%; background:var(--surf); border:1.5px solid var(--border2);
+  border-radius:var(--r-sm); padding:9px 10px 9px 32px;
+  font-size:13px; color:var(--text); transition:border-color .15s;
+}
+.search-inp:focus { border-color:var(--acc) }
+.search-inp::placeholder { color:var(--muted2) }
+.fchips { display:flex; gap:6px; overflow-x:auto; margin-bottom:14px; padding-bottom:2px; scrollbar-width:none }
+.fchips::-webkit-scrollbar { display:none }
+.fchip {
+  flex-shrink:0; padding:5px 12px; border-radius:99px; font-size:11px; font-weight:600;
+  background:var(--surf); border:1.5px solid var(--border2); color:var(--muted);
+  cursor:pointer; transition:all .15s;
+}
+.fchip.active { background:var(--acc); color:#fff; border-color:var(--acc) }
+
+/* ═══════════════════════════════
+   INPUTS FORM
+═══════════════════════════════ */
+.inp {
+  width:100%; background:var(--surf); border:1.5px solid var(--border2);
+  border-radius:var(--r-sm); color:var(--text); padding:10px 12px;
+  font-size:13px; transition:all .15s;
+}
+.inp:focus { border-color:var(--acc); box-shadow:0 0 0 3px var(--acc-s) }
+.inp::placeholder { color:var(--muted2) }
+textarea.inp { resize:none; line-height:1.6 }
+select.inp { appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%236b7280' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 10px center; padding-right:28px }
+.inp-lbl { font-size:11px; font-weight:600; color:var(--text2); margin-bottom:5px; display:flex; align-items:center; gap:5px }
+.inp-lbl i { color:var(--acc); font-size:10px }
+.fgrp { margin-bottom:12px }
+.frow { display:grid; gap:10px }
+.frow-2 { grid-template-columns:1fr 1fr }
+
+/* ═══════════════════════════════
+   BOTÕES
+═══════════════════════════════ */
+.btn {
+  display:inline-flex; align-items:center; justify-content:center; gap:7px;
+  padding:11px 18px; border-radius:var(--r-sm); font-size:13px; font-weight:600;
+  cursor:pointer; transition:all .15s; border:none; white-space:nowrap;
+}
+.btn-primary { background:var(--acc); color:#fff; box-shadow:var(--sh-g) }
+.btn-primary:active { background:var(--acc-h); transform:scale(.97) }
+.btn-ghost { background:transparent; color:var(--acc); border:1.5px solid var(--border2) }
+.btn-ghost:active { background:var(--acc-s) }
+.btn-g { background:var(--acc-s); color:var(--green-700); border:1.5px solid rgba(22,163,74,.2) }
+.btn-a { background:var(--amber-s); color:#92400e; border:1.5px solid rgba(245,158,11,.2) }
+.btn-r { background:var(--red-s); color:#991b1b; border:1.5px solid rgba(239,68,68,.2) }
+.btn-p { background:var(--purple-s); color:#5b21b6; border:1.5px solid rgba(139,92,246,.2) }
+.btn-b { background:var(--blue-s); color:#1d4ed8; border:1.5px solid rgba(59,130,246,.2) }
+.btn-sm  { padding:7px 13px; font-size:11px }
+.btn-full{ width:100% }
+.btn-row { display:flex; gap:8px; flex-wrap:wrap }
+.btn-row-equal { display:grid; grid-template-columns:1fr 1fr; gap:8px }
+.btn-icon { width:38px; height:38px; padding:0; border-radius:var(--r-sm); border:1.5px solid var(--border2); background:var(--surf); color:var(--acc); flex-shrink:0 }
+.btn-icon:active { background:var(--acc-s) }
+
+/* ═══════════════════════════════
+   FAB
+═══════════════════════════════ */
+#fab {
+  position:fixed; right:16px; bottom:calc(var(--nav) + 14px);
+  width:54px; height:54px; border-radius:18px;
+  background:linear-gradient(135deg,var(--green-500),var(--green-700));
+  color:#fff; font-size:22px; box-shadow:0 4px 20px rgba(22,163,74,.4);
+  display:flex; align-items:center; justify-content:center;
+  z-index:99; transition:all .2s; border:none; cursor:pointer;
+}
+#fab:active { transform:scale(.92) rotate(45deg) }
+
+/* ═══════════════════════════════
+   TOAST
+═══════════════════════════════ */
+#toast-wrap { position:fixed; top:calc(var(--topbar)+10px); left:50%; transform:translateX(-50%); z-index:999; display:flex; flex-direction:column; gap:6px; align-items:center; pointer-events:none }
+.toast {
+  display:flex; align-items:center; gap:8px; padding:9px 16px;
+  border-radius:99px; font-size:12px; font-weight:600;
+  box-shadow:0 4px 16px rgba(0,0,0,.12); animation:toastIn .22s ease;
+  max-width:88vw; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+@keyframes toastIn { from{opacity:0;transform:translateY(-8px)scale(.95)} to{opacity:1;transform:translateY(0)scale(1)} }
+.toast.ok     { background:#dcfce7; color:var(--green-800); border:1px solid var(--border2) }
+.toast.err    { background:#fee2e2; color:#991b1b; border:1px solid rgba(239,68,68,.25) }
+.toast.warn   { background:#fef3c7; color:#92400e; border:1px solid rgba(245,158,11,.25) }
+.toast.info   { background:var(--surf); color:var(--text); border:1px solid var(--border) }
+
+/* ═══════════════════════════════
+   MODAL
+═══════════════════════════════ */
+.overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,.35);
+  z-index:200; display:none; align-items:flex-end;
+  backdrop-filter:blur(4px);
+}
+.overlay.open { display:flex; animation:fadeO .2s }
+@keyframes fadeO { from{opacity:0} to{opacity:1} }
+.sheet {
+  width:100%; max-width:600px; margin:0 auto;
+  background:var(--surf); border-radius:22px 22px 0 0;
+  border-top:1.5px solid var(--border);
+  max-height:93vh; display:flex; flex-direction:column;
+  animation:slideUp .26s cubic-bezier(.32,.72,0,1);
+  padding-bottom:env(safe-area-inset-bottom,0);
+}
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.sheet-handle { width:36px; height:4px; background:var(--border2); border-radius:99px; margin:10px auto 6px; flex-shrink:0 }
+.sheet-hdr {
+  padding:8px 16px 12px; border-bottom:1px solid var(--border);
+  flex-shrink:0; display:flex; align-items:center; gap:10px;
+}
+.sheet-title { font-size:16px; font-weight:800; color:var(--text); flex:1; letter-spacing:-.3px }
+.sheet-close {
+  width:30px; height:30px; border-radius:var(--r-sm);
+  background:var(--green-50); color:var(--muted); display:flex;
+  align-items:center; justify-content:center; font-size:13px;
+  border:1.5px solid var(--border); cursor:pointer;
+}
+.sheet-body { flex:1; overflow-y:auto; padding:14px 16px; -webkit-overflow-scrolling:touch; overscroll-behavior:contain }
+.sheet-foot { padding:12px 16px; border-top:1px solid var(--border); flex-shrink:0 }
+
+/* ═══════════════════════════════
+   CARD GENÉRICO
+═══════════════════════════════ */
+.card { background:var(--surf); border:1.5px solid var(--border); border-radius:var(--r); overflow:hidden; margin-bottom:12px; box-shadow:var(--sh-card) }
+.card-hdr { padding:10px 14px; background:var(--green-50); border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px }
+.card-icon { width:30px; height:30px; border-radius:var(--r-sm); display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0 }
+.card-title { font-size:12px; font-weight:700; color:var(--text) }
+.card-sub   { font-size:10px; color:var(--muted) }
+.card-body  { padding:12px 14px }
+
+/* ═══════════════════════════════
+   TABS
+═══════════════════════════════ */
+.tabs-wrap { position:relative; margin-bottom:14px }
+.tabs { display:flex; background:var(--green-50); border-radius:var(--r-sm); padding:4px; gap:2px; border:1.5px solid var(--border) }
+.tab-btn {
+  flex:1; padding:8px 8px; border-radius:7px; font-size:11px; font-weight:600;
+  color:var(--muted); white-space:nowrap; transition:color .2s;
+  display:flex; align-items:center; justify-content:center; gap:5px; position:relative; z-index:1;
+}
+.tab-btn i { font-size:12px }
+.tab-btn.active { color:var(--green-800); font-weight:700 }
+.tab-slider {
+  position:absolute; top:4px; left:4px; height:calc(100% - 8px);
+  background:var(--surf); border-radius:7px; z-index:0;
+  transition:left .25s cubic-bezier(.34,1.2,.64,1), width .25s cubic-bezier(.34,1.2,.64,1);
+  box-shadow:var(--sh-card); border:1px solid var(--border);
+}
+.tab-pane { display:none }
+.tab-pane.active { display:block; animation:tabIn .18s ease }
+@keyframes tabIn { from{opacity:0;transform:translateX(6px)} to{opacity:1;transform:translateX(0)} }
+
+/* ═══════════════════════════════
+   FLUXO (4 ETAPAS)
+═══════════════════════════════ */
+.fluxo {
+  background:var(--green-50); border:1.5px solid var(--border);
+  border-radius:var(--r); padding:14px 10px 10px; margin-bottom:4px;
+}
+.fluxo-bar-bg { height:4px; background:var(--border2); border-radius:99px; margin-bottom:16px; overflow:hidden }
+.fluxo-bar-fill { height:100%; background:linear-gradient(90deg,var(--green-400),var(--green-600)); border-radius:99px; transition:width .5s cubic-bezier(.34,1.2,.64,1) }
+.fluxo-row { display:flex; align-items:flex-start; justify-content:space-between }
+.fstep { display:flex; flex-direction:column; align-items:center; gap:5px; flex:1; cursor:pointer }
+.fstep:active .fs-dot { transform:scale(.9) }
+.fs-dot {
+  width:44px; height:44px; border-radius:50%;
+  border:2px solid var(--border2); background:var(--surf);
+  display:flex; align-items:center; justify-content:center; font-size:17px;
+  transition:all .25s cubic-bezier(.34,1.56,.64,1); position:relative;
+}
+.fstep.fs-done   .fs-dot { border-color:var(--green-500); background:var(--green-100); color:var(--green-600); box-shadow:0 0 0 4px rgba(34,197,94,.1) }
+.fstep.fs-active .fs-dot { border-color:var(--amber); background:var(--amber-s); color:var(--amber); animation:fsPulse 2s ease-in-out infinite }
+.fstep.fs-pend   .fs-dot { opacity:.4; color:var(--muted) }
+.fstep.fs-final  .fs-dot { border-color:var(--green-600); background:linear-gradient(135deg,var(--green-500),var(--green-700)); color:#fff; box-shadow:0 0 16px rgba(22,163,74,.35) }
+@keyframes fsPulse { 0%,100%{box-shadow:0 0 0 4px rgba(245,158,11,.15)} 50%{box-shadow:0 0 0 10px rgba(245,158,11,0)} }
+.fs-tick { position:absolute; bottom:-2px; right:-2px; width:14px; height:14px; border-radius:50%; background:var(--green-500); color:#fff; font-size:7px; display:flex; align-items:center; justify-content:center; border:2px solid var(--surf) }
+.fs-lbl  { font-size:9px; font-weight:700; text-align:center; line-height:1.2; color:var(--muted); white-space:nowrap }
+.fstep.fs-done   .fs-lbl { color:var(--green-600) }
+.fstep.fs-active .fs-lbl { color:var(--amber) }
+.fstep.fs-final  .fs-lbl { color:var(--green-700) }
+.fstep .fs-data  { font-size:7px; color:var(--muted); font-family:var(--mono); text-align:center; max-width:58px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.fluxo-status { margin-top:10px; padding-top:8px; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between }
+.fluxo-status-txt { font-size:11px; font-weight:700; display:flex; align-items:center; gap:6px }
+.fluxo-pct { font-size:10px; font-family:var(--mono); color:var(--muted) }
+
+/* ═══════════════════════════════
+   CHAT / ASSISTENTE
+═══════════════════════════════ */
+.chat-box { display:flex; flex-direction:column; gap:10px; padding:10px }
+.cmsg { display:flex; gap:8px; animation:msgIn .2s ease }
+@keyframes msgIn { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
+.cmsg.user { flex-direction:row-reverse }
+.cav {
+  width:28px; height:28px; border-radius:8px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:12px;
+}
+.cav.bot  { background:linear-gradient(135deg,var(--green-400),var(--green-700)); color:#fff }
+.cav.user { background:var(--green-50); border:1.5px solid var(--border2); color:var(--acc) }
+.cbubble {
+  max-width:82%; padding:10px 13px; font-size:13px; line-height:1.6;
+  border-radius:14px; white-space:pre-wrap;
+}
+.cbubble.bot  { background:var(--green-50); border:1.5px solid var(--border); border-top-left-radius:4px; color:var(--text) }
+.cbubble.user { background:linear-gradient(135deg,var(--green-600),var(--green-800)); color:#fff; border-top-right-radius:4px }
+.chat-inp-wrap { display:flex; gap:8px; padding:10px 14px; border-top:1px solid var(--border); background:var(--surf); flex-shrink:0 }
+.chat-inp {
+  flex:1; background:var(--green-50); border:1.5px solid var(--border2);
+  border-radius:20px; color:var(--text); padding:9px 14px;
+  font-size:13px; transition:border-color .15s;
+}
+.chat-inp:focus { border-color:var(--acc) }
+.chat-inp::placeholder { color:var(--muted2) }
+.chat-send {
+  width:38px; height:38px; border-radius:50%; flex-shrink:0;
+  background:linear-gradient(135deg,var(--green-500),var(--green-700));
+  color:#fff; font-size:14px; display:flex; align-items:center; justify-content:center;
+  box-shadow:var(--sh-g); transition:all .15s; border:none; cursor:pointer;
+}
+.chat-send:active { transform:scale(.93) }
+.typing-dot { display:inline-flex; gap:3px; align-items:center }
+.typing-dot span { width:6px; height:6px; border-radius:50%; background:var(--muted2); animation:tdot 1.2s ease-in-out infinite }
+.typing-dot span:nth-child(2) { animation-delay:.2s }
+.typing-dot span:nth-child(3) { animation-delay:.4s }
+@keyframes tdot { 0%,80%,100%{transform:scale(.8);opacity:.4} 40%{transform:scale(1.1);opacity:1} }
+
+/* ═══════════════════════════════
+   OPT CHIPS (atendimento)
+═══════════════════════════════ */
+.opts-wrap { display:flex; flex-wrap:wrap; gap:6px; padding:0 10px 8px; flex-shrink:0 }
+.opt-chip {
+  padding:6px 12px; border-radius:99px; font-size:11px; font-weight:600;
+  background:var(--surf); border:1.5px solid var(--border2); color:var(--acc);
+  cursor:pointer; transition:all .15s;
+}
+.opt-chip.sel, .opt-chip:active { background:var(--acc); color:#fff; border-color:var(--acc) }
+
+/* ═══════════════════════════════
+   IMAGEM PREVIEW
+═══════════════════════════════ */
+.img-preview-wrap {
+  position:relative; border-radius:var(--r-sm); overflow:hidden;
+  border:1.5px solid var(--border2); margin-bottom:10px; display:none;
+}
+.img-preview-wrap img { width:100%; max-height:200px; object-fit:contain; display:block; background:var(--green-50) }
+.img-close {
+  position:absolute; top:6px; right:6px; width:24px; height:24px; border-radius:99px;
+  background:rgba(0,0,0,.5); color:#fff; font-size:10px; display:flex;
+  align-items:center; justify-content:center; border:none; cursor:pointer;
+}
+.img-nome { font-size:10px; color:var(--muted); font-family:var(--mono); text-align:center; padding:4px 0 6px }
+
+/* ═══════════════════════════════
+   MODO SEGURO/PRODUTIVO
+═══════════════════════════════ */
+.modos { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px }
+.modo-btn {
+  padding:10px; border-radius:var(--r-sm); text-align:center; cursor:pointer;
+  border:1.5px solid var(--border2); background:var(--surf); transition:all .15s;
+}
+.modo-btn i { font-size:18px; display:block; margin-bottom:4px; color:var(--muted) }
+.modo-btn .mb-lbl { font-size:12px; font-weight:700; color:var(--muted) }
+.modo-btn .mb-sub { font-size:10px; color:var(--muted2) }
+.modo-btn.sel.seg { border-color:var(--green-500); background:rgba(34,197,94,.08) }
+.modo-btn.sel.seg i, .modo-btn.sel.seg .mb-lbl { color:var(--green-600) }
+.modo-btn.sel.prod { border-color:var(--amber); background:var(--amber-s) }
+.modo-btn.sel.prod i, .modo-btn.sel.prod .mb-lbl { color:#92400e }
+.modo-info {
+  display:flex; align-items:center; gap:8px; padding:9px 12px;
+  border-radius:var(--r-sm); font-size:12px; margin-bottom:12px;
+}
+.modo-info i { flex-shrink:0 }
+.modo-info.info-seg  { background:rgba(34,197,94,.08); color:var(--green-700); border:1px solid rgba(34,197,94,.2) }
+.modo-info.info-prod { background:var(--amber-s); color:#92400e; border:1px solid rgba(245,158,11,.2) }
+
+/* ═══════════════════════════════
+   IA SPIN
+═══════════════════════════════ */
+.ia-spin { display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; margin-left:4px; vertical-align:middle }
+@keyframes spin { to{transform:rotate(360deg)} }
+.ia-spin.dark { border:2px solid rgba(22,163,74,.2); border-top-color:var(--acc) }
+
+/* ═══════════════════════════════
+   REVISÃO IA
+═══════════════════════════════ */
+.rev-field { display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid var(--border) }
+.rev-field:last-child { border-bottom:none }
+.rev-lbl { font-size:10px; font-weight:600; color:var(--muted); width:72px; flex-shrink:0 }
+.rev-val { font-size:13px; color:var(--text); flex:1 }
+.rev-badge { font-size:9px; padding:2px 7px; border-radius:99px; background:var(--acc-s); color:var(--green-700); border:1px solid rgba(22,163,74,.2); font-weight:700; flex-shrink:0 }
+
+/* ═══════════════════════════════
+   RESULTADO BADGE
+═══════════════════════════════ */
+.res-badge {
+  display:flex; align-items:center; gap:8px; padding:10px 12px;
+  border-radius:var(--r-sm); margin-bottom:10px; font-size:12px; font-weight:700;
+}
+.res-pos { background:rgba(34,197,94,.1); border:1.5px solid rgba(34,197,94,.25); color:var(--green-800) }
+.res-neg { background:var(--red-s); border:1.5px solid rgba(239,68,68,.25); color:#991b1b }
+
+/* ═══════════════════════════════
+   HISTÓRICO TIMELINE
+═══════════════════════════════ */
+.timeline { padding:2px 0 }
+.tl-track { position:relative; padding-left:34px }
+.tl-track::before { content:''; position:absolute; left:11px; top:0; bottom:0; width:2px; background:linear-gradient(to bottom,var(--green-300),var(--border)); }
+.tl-item { position:relative; margin-bottom:18px }
+.tl-dot {
+  position:absolute; left:-29px; top:2px; width:16px; height:16px; border-radius:50%;
+  border:2px solid var(--acc); background:var(--surf);
+  display:flex; align-items:center; justify-content:center; z-index:1;
+  color:var(--acc); font-size:7px;
+}
+.tl-dot.ok    { border-color:var(--green-500); background:var(--green-100); color:var(--green-700) }
+.tl-dot.neg   { border-color:var(--red); background:var(--red-s); color:var(--red) }
+.tl-dot.warn  { border-color:var(--amber); background:var(--amber-s); color:var(--amber) }
+.tl-dot.cert  { border-color:var(--purple); background:var(--purple-s); color:var(--purple) }
+.tl-dot.wpp   { border-color:var(--green-400); background:rgba(74,222,128,.12); color:var(--green-600) }
+.tl-card { background:var(--surf); border:1.5px solid var(--border); border-radius:var(--r-sm); padding:9px 12px; box-shadow:var(--sh-card) }
+.tl-titulo { font-size:12px; font-weight:700; color:var(--text) }
+.tl-hora   { font-size:9px; color:var(--muted2); font-family:var(--mono); margin-top:2px }
+.tl-det    { font-size:11px; color:var(--muted); margin-top:4px; line-height:1.5 }
+
+/* ═══════════════════════════════
+   CONFIG KEYS
+═══════════════════════════════ */
+.key-row {
+  display:flex; align-items:center; gap:8px; padding:10px 12px;
+  background:var(--green-50); border:1.5px solid var(--border); border-radius:var(--r-sm); margin-bottom:8px;
+}
+.key-ico { width:32px; height:32px; border-radius:var(--r-sm); display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0 }
+.key-ico.claude  { background:rgba(255,149,0,.12); color:#d97706 }
+.key-ico.gemini  { background:var(--blue-s); color:var(--blue) }
+.key-ico.maps    { background:var(--red-s); color:var(--red) }
+.key-info { flex:1; min-width:0 }
+.key-name { font-size:12px; font-weight:700; color:var(--text) }
+.key-status { font-size:10px; margin-top:1px }
+.key-status.ok  { color:var(--green-600) }
+.key-status.no  { color:var(--muted) }
+.key-edit { font-size:11px; color:var(--acc); font-weight:600; flex-shrink:0 }
+
+/* ═══════════════════════════════
+   BANNER MANDADO (IA view)
+═══════════════════════════════ */
+.ia-ctx-banner {
+  padding:8px 14px; background:rgba(22,163,74,.07);
+  border-bottom:1px solid rgba(22,163,74,.18); flex-shrink:0;
+}
+.ia-ctx-top { display:flex; align-items:center; justify-content:space-between; gap:8px }
+.ia-ctx-nome { font-size:11px; font-weight:700; color:var(--green-700); white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.ia-ctx-proc { font-size:9px; color:var(--muted); font-family:var(--mono) }
+.ia-ctx-clear { font-size:10px; color:var(--muted); cursor:pointer }
+.ia-shortcuts { display:flex; gap:6px; overflow-x:auto; margin-top:7px; scrollbar-width:none; padding-bottom:1px }
+.ia-shortcuts::-webkit-scrollbar { display:none }
+.sc-chip {
+  flex-shrink:0; padding:4px 10px; border-radius:99px; font-size:10px; font-weight:600;
+  background:var(--surf); border:1.5px solid var(--border2); color:var(--acc); cursor:pointer;
+  display:flex; align-items:center; gap:4px; transition:all .15s;
+}
+.sc-chip:active { background:var(--acc); color:#fff }
+
+/* ═══════════════════════════════
+   EMPTY STATE
+═══════════════════════════════ */
+.empty { text-align:center; padding:40px 20px; color:var(--muted) }
+.empty i { font-size:36px; display:block; margin-bottom:10px; opacity:.35 }
+.empty p { font-size:13px; line-height:1.6 }
+
+/* ═══════════════════════════════
+   CERTIDÃO TEXTAREA
+═══════════════════════════════ */
+.cert-area {
+  width:100%; min-height:200px; background:var(--green-50);
+  border:1.5px solid var(--border2); border-radius:var(--r-sm);
+  padding:12px; font-size:12px; line-height:1.8;
+  color:var(--text); font-family:var(--mono); resize:vertical;
+}
+.cert-area:focus { border-color:var(--acc); outline:none; box-shadow:0 0 0 3px var(--acc-s) }
+
+/* ═══════════════════════════════
+   SPINNER GERAL
+═══════════════════════════════ */
+.spin-overlay { display:none; position:absolute; inset:0; background:rgba(255,255,255,.7); align-items:center; justify-content:center; z-index:10; border-radius:inherit }
+.spin-overlay.show { display:flex }
+.big-spin { width:36px; height:36px; border:3px solid var(--border2); border-top-color:var(--acc); border-radius:50%; animation:spin .8s linear infinite }
+
+/* ═══════════════════════════════
+   DIVIDER
+═══════════════════════════════ */
+.divider { display:flex; align-items:center; gap:10px; margin:14px 0 }
+.divider span { font-size:11px; color:var(--muted2); white-space:nowrap }
+.divider::before,.divider::after { content:''; flex:1; height:1px; background:var(--border) }
+
+/* ═══════════════════════════════
+   UTILITÁRIOS
+═══════════════════════════════ */
+.mt-8  { margin-top:8px }
+.mt-12 { margin-top:12px }
+.mt-16 { margin-top:16px }
+.gap-8 { gap:8px }
+.txt-muted { color:var(--muted) }
+.txt-sm { font-size:11px }
+.mono { font-family:var(--mono) }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div id="topbar">
+  <div class="tb-left">
+    <div class="tb-logo">OJ</div>
+    <div>
+      <div class="tb-title">Mandados</div>
+      <div class="tb-sub" id="tb-zona">Zona 07 · TJMT</div>
+    </div>
+  </div>
+  <div class="tb-right">
+    <button class="tb-btn" onclick="navTo('ia')" title="Assistente IA"><i class="fa fa-robot"></i></button>
+    <button class="tb-btn" onclick="abrirConfig()" title="Configurações"><i class="fa fa-cog"></i></button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+  <!-- ══ HOME ══ -->
+  <div id="view-home" class="view active vpad">
+    <div class="stats-grid">
+      <div class="stat-card sc-total"><div class="stat-val" id="st-total">0</div><div class="stat-lbl">Total</div></div>
+      <div class="stat-card sc-pend"> <div class="stat-val" id="st-pend">0</div><div class="stat-lbl">Pendentes</div></div>
+      <div class="stat-card sc-ok">  <div class="stat-val" id="st-ok">0</div><div class="stat-lbl">Concluídos</div></div>
+      <div class="stat-card sc-pje"> <div class="stat-val" id="st-pje">0</div><div class="stat-lbl">No PJe</div></div>
+    </div>
+    <div class="sec-hdr">
+      <span class="sec-title">Recentes</span>
+      <button class="sec-link" onclick="navTo('mandados')">Ver todos</button>
+    </div>
+    <div class="mlist" id="home-list"></div>
+    <div class="empty" id="home-empty" style="display:none">
+      <i class="fa fa-scroll"></i>
+      <p>Nenhum mandado cadastrado.<br>Toque em <strong>+</strong> para adicionar.</p>
+    </div>
+  </div>
+
+  <!-- ══ MANDADOS ══ -->
+  <div id="view-mandados" class="view vpad">
+    <div class="search-bar">
+      <div class="search-wrap">
+        <i class="fa fa-search search-ico"></i>
+        <input type="search" class="search-inp" id="search-inp" placeholder="Buscar nome, processo, endereço…" oninput="filtrar()">
+      </div>
+      <button class="btn-icon" onclick="buscarIA()" title="Busca IA"><i class="fa fa-robot"></i></button>
+    </div>
+    <div class="fchips" id="fchips">
+      <div class="fchip active" onclick="setFiltro('todos',this)">Todos</div>
+      <div class="fchip" onclick="setFiltro('pendente',this)">Pendentes</div>
+      <div class="fchip" onclick="setFiltro('eletronico',this)">Eletrônico</div>
+      <div class="fchip" onclick="setFiltro('presencial',this)">Presencial</div>
+      <div class="fchip" onclick="setFiltro('concluido',this)">Concluídos</div>
+      <div class="fchip" onclick="setFiltro('negativo',this)">Negativos</div>
+    </div>
+    <div class="mlist" id="mand-list"></div>
+    <div class="empty" id="mand-empty" style="display:none">
+      <i class="fa fa-filter"></i><p>Nenhum mandado encontrado.</p>
+    </div>
+  </div>
+
+  <!-- ══ HISTÓRICO ══ -->
+  <div id="view-historico" class="view vpad">
+    <div class="sec-hdr"><span class="sec-title">Histórico de Ações</span></div>
+    <div class="timeline tl-track" id="hist-list"></div>
+    <div class="empty" id="hist-empty" style="display:none">
+      <i class="fa fa-clock-rotate-left"></i><p>Nenhuma ação registrada ainda.</p>
+    </div>
+  </div>
+
+  <!-- ══ ASSISTENTE IA ══ -->
+  <div id="view-ia" class="view" style="padding:0">
+    <div style="display:flex;flex-direction:column;height:100%">
+      <!-- banner mandado ativo -->
+      <div id="ia-ctx" class="ia-ctx-banner" style="display:none">
+        <div class="ia-ctx-top">
+          <div>
+            <div id="ia-ctx-nome" class="ia-ctx-nome"></div>
+            <div id="ia-ctx-proc" class="ia-ctx-proc"></div>
+          </div>
+          <button class="ia-ctx-clear" onclick="limparCtxIA()"><i class="fa fa-xmark"></i> limpar</button>
+        </div>
+        <div class="ia-shortcuts">
+          <button class="sc-chip" onclick="atalhoIA('resumo')"><i class="fa fa-list-ul"></i> Resumo</button>
+          <button class="sc-chip" onclick="atalhoIA('estrategia')"><i class="fa fa-lightbulb"></i> Estratégia</button>
+          <button class="sc-chip" onclick="atalhoIA('wpp')"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+          <button class="sc-chip" onclick="atalhoIA('certidao')"><i class="fa fa-scroll"></i> Certidão</button>
+          <button class="sc-chip" onclick="atalhoIA('pendencias')"><i class="fa fa-triangle-exclamation"></i> Pendências</button>
+        </div>
+      </div>
+      <!-- msgs -->
+      <div id="ia-msgs" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 14px;display:flex;flex-direction:column;gap:10px">
+        <div class="cmsg">
+          <div class="cav bot"><i class="fa fa-comments"></i></div>
+          <div class="cbubble bot">Olá! Sou o assistente do OJ Mandados.<br><br>Posso ajudar com certidões, intimações, legislação e muito mais.<br>Para análise de um mandado específico, abra o mandado e toque em <b>Analisar com IA</b>.</div>
+        </div>
+      </div>
+      <!-- input -->
+      <div class="chat-inp-wrap">
+        <input type="text" id="ia-inp" class="chat-inp" placeholder="Pergunte sobre mandados, certidões…" onkeydown="if(event.key==='Enter')enviarIA()">
+        <button class="chat-send" id="ia-send" onclick="enviarIA()"><i class="fa fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- BOTTOM NAV -->
+<div id="bottomnav">
+  <button class="nav-btn active" id="nav-home"      onclick="navTo('home')">     <i class="fa fa-house"></i>Home</button>
+  <button class="nav-btn"        id="nav-mandados"  onclick="navTo('mandados')"> <i class="fa fa-scroll"></i>Mandados</button>
+  <button class="nav-btn"        id="nav-historico" onclick="navTo('historico')"><i class="fa fa-clock-rotate-left"></i>Histórico</button>
+  <button class="nav-btn"        id="nav-ia"        onclick="navTo('ia')">       <i class="fa fa-robot"></i>IA</button>
+</div>
+
+<!-- FAB -->
+<button id="fab" onclick="abrirNovoMandado()"><i class="fa fa-plus"></i></button>
+
+<!-- TOASTS -->
+<div id="toast-wrap"></div>
+
+<!-- ════════════════════════════════
+     MODAL: NOVO MANDADO
+════════════════════════════════ -->
+<div class="overlay" id="m-novo">
+  <div class="sheet" style="max-height:96vh">
+    <div class="sheet-handle"></div>
+    <div class="sheet-hdr">
+      <div class="sheet-title"><i class="fa fa-plus" style="color:var(--acc);margin-right:6px"></i>Novo Mandado</div>
+      <div class="sheet-close" onclick="fechar('m-novo')"><i class="fa fa-xmark"></i></div>
+    </div>
+    <div class="sheet-body">
+
+      <!-- MODO -->
+      <div class="modos">
+        <div class="modo-btn seg sel" id="modo-seg" onclick="setModo('seguro')">
+          <i class="fa fa-shield-halved"></i>
+          <div class="mb-lbl">Seguro</div>
+          <div class="mb-sub">Revisa antes</div>
+        </div>
+        <div class="modo-btn prod" id="modo-prod" onclick="setModo('produtivo')">
+          <i class="fa fa-bolt"></i>
+          <div class="mb-lbl">Produtivo</div>
+          <div class="mb-sub">Auto-preenche</div>
+        </div>
+      </div>
+      <div id="modo-banner" class="modo-info info-seg">
+        <i class="fa fa-shield-halved"></i><span>IA extrai e apresenta para você <strong>revisar</strong> antes de preencher.</span>
+      </div>
+
+      <!-- IMAGEM -->
+      <div class="card" style="border-left:3px solid var(--acc)">
+        <div class="card-hdr">
+          <div class="card-icon" style="background:var(--acc-s);color:var(--acc)"><i class="fa fa-camera"></i></div>
+          <div><div class="card-title">Foto do mandado</div><div class="card-sub">IA lê e extrai os dados automaticamente</div></div>
+        </div>
+        <div class="card-body">
+          <div class="img-preview-wrap" id="img-wrap">
+            <img id="img-prev" src="" alt="">
+            <button class="img-close" onclick="limparImagem()"><i class="fa fa-xmark"></i></button>
+          </div>
+          <div class="img-nome" id="img-nome" style="display:none"></div>
+          <div class="btn-row-equal">
+            <button class="btn btn-g" onclick="document.getElementById('inp-cam').click()">
+              <i class="fa fa-camera"></i> Câmera
+              <input type="file" id="inp-cam" accept="image/*" capture="environment" style="display:none" onchange="onImagem(this)">
+            </button>
+            <button class="btn btn-g" onclick="document.getElementById('inp-gal').click()">
+              <i class="fa fa-image"></i> Galeria
+              <input type="file" id="inp-gal" accept="image/*" style="display:none" onchange="onImagem(this)">
+            </button>
+          </div>
+          <button class="btn btn-primary btn-full mt-8" id="btn-extrair" style="display:none" onclick="extrairImagem()">
+            <i class="fa fa-wand-magic-sparkles"></i> Extrair dados com IA
+            <span id="spin-extrair" class="ia-spin" style="display:none"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- DIVIDER -->
+      <div class="divider"><span>ou preencha manualmente</span></div>
+
+      <!-- FORM -->
+      <div id="novo-form">
+        <div class="frow frow-2">
+          <div class="fgrp">
+            <div class="inp-lbl"><i class="fa fa-hashtag"></i> Nº Processo</div>
+            <input type="text" class="inp" id="f-proc" placeholder="0000000-00.0000.8.11.00">
+          </div>
+          <div class="fgrp">
+            <div class="inp-lbl"><i class="fa fa-tag"></i> Tipo</div>
+            <select class="inp" id="f-tipo">
+              <option>Citação</option><option>Intimação</option><option>Penhora</option>
+              <option>Busca e Apreensão</option><option>Avaliação</option><option>Outro</option>
+            </select>
+          </div>
+        </div>
+        <div class="fgrp">
+          <div class="inp-lbl"><i class="fa fa-person"></i> Parte / Réu</div>
+          <input type="text" class="inp" id="f-parte" placeholder="Nome completo">
+        </div>
+        <div class="fgrp">
+          <div class="inp-lbl"><i class="fa fa-location-dot"></i> Endereço</div>
+          <input type="text" class="inp" id="f-end" placeholder="Rua, número, bairro">
+        </div>
+        <div class="frow frow-2">
+          <div class="fgrp">
+            <div class="inp-lbl"><i class="fa fa-phone"></i> Telefone</div>
+            <input type="tel" class="inp" id="f-tel" placeholder="(65) 99999-9999">
+          </div>
+          <div class="fgrp">
+            <div class="inp-lbl"><i class="fab fa-whatsapp"></i> WhatsApp</div>
+            <input type="tel" class="inp" id="f-wpp" placeholder="(65) 99999-9999">
+          </div>
+        </div>
+        <div class="fgrp">
+          <div class="inp-lbl"><i class="fa fa-mobile-screen"></i> Modalidade</div>
+          <div class="btn-row">
+            <button class="btn btn-g btn-sm sel-mod active" id="op-el" onclick="selMod('eletronico',this)"><i class="fa fa-mobile-screen"></i> Eletrônico</button>
+            <button class="btn btn-ghost btn-sm sel-mod"   id="op-pr" onclick="selMod('presencial',this)"><i class="fa fa-person-walking"></i> Presencial</button>
+          </div>
+        </div>
+        <div class="fgrp">
+          <div class="inp-lbl"><i class="fa fa-note-sticky"></i> Observações</div>
+          <textarea class="inp" id="f-obs" rows="3" placeholder="Informações adicionais…"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn btn-primary btn-full" onclick="salvarMandado()"><i class="fa fa-floppy-disk"></i> Salvar Mandado</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     MODAL: REVISÃO IA
+════════════════════════════════ -->
+<div class="overlay" id="m-revisao">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-hdr">
+      <div class="sheet-title"><i class="fa fa-robot" style="color:var(--acc);margin-right:6px"></i>Revisão IA</div>
+      <div class="sheet-close" onclick="fechar('m-revisao')"><i class="fa fa-xmark"></i></div>
+    </div>
+    <div class="sheet-body">
+      <div style="background:var(--acc-s);border:1px solid rgba(22,163,74,.2);border-radius:var(--r-sm);padding:9px 12px;font-size:12px;color:var(--green-700);margin-bottom:14px;display:flex;align-items:center;gap:7px">
+        <i class="fa fa-circle-info"></i> Confira os dados extraídos. Edite se necessário antes de confirmar.
+      </div>
+      <div id="rev-campos"></div>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn btn-primary btn-full" onclick="confirmarRevisao()"><i class="fa fa-check"></i> Confirmar e Preencher</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     MODAL: DETALHE MANDADO
+════════════════════════════════ -->
+<div class="overlay" id="m-det">
+  <div class="sheet" style="max-height:96vh">
+    <div class="sheet-handle"></div>
+    <div class="sheet-hdr">
+      <div>
+        <div class="sheet-title" id="det-nome" style="font-size:15px"></div>
+        <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:1px" id="det-proc"></div>
+      </div>
+      <button class="pill" id="det-mod-pill" onclick="trocarMod()" style="cursor:pointer;margin-right:4px"></button>
+      <div class="sheet-close" onclick="fechar('m-det')"><i class="fa fa-xmark"></i></div>
+    </div>
+    <div class="sheet-body">
+      <!-- fluxo visual -->
+      <div id="det-fluxo" class="mb-12"></div>
+      <!-- resultado badge -->
+      <div id="det-res" style="display:none"></div>
+      <!-- tabs -->
+      <div class="tabs-wrap">
+        <div class="tabs" id="det-tabs">
+          <button class="tab-btn active" onclick="setTab(0,this)"><i class="fa fa-person-walking"></i> Cumprimento</button>
+          <button class="tab-btn"        onclick="setTab(1,this)"><i class="fa fa-scroll"></i> Certidão</button>
+          <button class="tab-btn"        onclick="setTab(2,this)"><i class="fa fa-ellipsis"></i> Mais</button>
+        </div>
+        <div class="tab-slider" id="tab-slider"></div>
+      </div>
+      <!-- pane 0: cumprimento / chat -->
+      <div class="tab-pane active" id="tp-cump">
+        <div style="background:var(--surf);border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden">
+          <div style="max-height:280px;overflow-y:auto;-webkit-overflow-scrolling:touch" id="atend-msgs">
+            <div class="chat-box"></div>
+          </div>
+          <div class="opts-wrap" id="atend-opts"></div>
+          <div style="display:flex;gap:8px;padding:8px 10px;border-top:1px solid var(--border)">
+            <input type="text" class="chat-inp" id="atend-inp" placeholder="Descreva o ocorrido…" style="font-size:12px" onkeydown="if(event.key==='Enter')enviarAtend()">
+            <button class="chat-send" style="width:34px;height:34px" id="atend-send" onclick="enviarAtend()"><i class="fa fa-paper-plane" style="font-size:12px"></i></button>
+          </div>
+        </div>
+        <div class="btn-row mt-12">
+          <button class="btn btn-b btn-sm" onclick="abrirMaps()"><i class="fa fa-map-location-dot"></i> Maps</button>
+          <button class="btn btn-g btn-sm" onclick="abrirWhatsApp()"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+          <button class="btn btn-p btn-sm" onclick="abrirIAComMandado()"><i class="fa fa-robot"></i> Analisar IA</button>
+        </div>
+      </div>
+      <!-- pane 1: certidão -->
+      <div class="tab-pane" id="tp-cert">
+        <div id="cert-vazia" style="display:none" class="empty"><i class="fa fa-scroll"></i><p>Nenhuma certidão gerada.<br>Toque abaixo para gerar com IA.</p></div>
+        <div id="cert-content">
+          <textarea id="cert-txt" class="cert-area" readonly placeholder="A certidão aparecerá aqui…"></textarea>
+          <div id="cert-edit-bar" style="display:none;gap:8px;margin-top:8px" class="btn-row">
+            <button class="btn btn-g btn-sm" onclick="salvarCert()"><i class="fa fa-floppy-disk"></i> Salvar</button>
+            <button class="btn btn-ghost btn-sm" onclick="cancelarEditCert()"><i class="fa fa-xmark"></i> Cancelar</button>
+          </div>
+        </div>
+        <div id="pje-ok" style="display:none" class="mt-8">
+          <div style="background:var(--purple-s);border:1.5px solid rgba(139,92,246,.2);border-radius:var(--r-sm);padding:8px 12px;font-size:11px;font-weight:700;color:#5b21b6;display:flex;align-items:center;gap:7px">
+            <i class="fa fa-gavel"></i> Juntado no PJe em <span id="pje-data"></span>
+          </div>
+        </div>
+        <div class="btn-row mt-12" id="cert-btns">
+          <button class="btn btn-primary" id="btn-gerar-cert" onclick="gerarCertidao()" style="display:none"><i class="fa fa-wand-magic-sparkles"></i> Gerar com IA<span id="spin-cert" class="ia-spin" style="display:none"></span></button>
+          <button class="btn btn-ghost btn-sm" onclick="editarCert()"><i class="fa fa-pen"></i> Editar</button>
+          <button class="btn btn-ghost btn-sm" onclick="copiarCert()"><i class="fa fa-copy"></i> Copiar</button>
+        </div>
+      </div>
+      <!-- pane 2: mais -->
+      <div class="tab-pane" id="tp-mais">
+        <div class="card">
+          <div class="card-hdr"><div class="card-icon" style="background:var(--acc-s);color:var(--acc)"><i class="fa fa-clock-rotate-left"></i></div><div><div class="card-title">Histórico do Mandado</div></div></div>
+          <div class="card-body"><div id="det-hist" class="timeline tl-track"></div></div>
+        </div>
+        <div class="btn-row mt-8">
+          <button class="btn btn-r btn-sm" onclick="confirmarExcluir()"><i class="fa fa-trash"></i> Excluir</button>
+        </div>
+      </div>
+    </div>
+    <div class="sheet-foot" id="det-foot" style="display:none">
+      <button class="btn btn-primary btn-full" id="btn-finalizar" onclick="marcarPJe()"><i class="fa fa-gavel"></i> Finalizar — Juntar no PJe</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     MODAL: CONFIGURAÇÕES
+════════════════════════════════ -->
+<div class="overlay" id="m-cfg">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-hdr">
+      <div class="sheet-title"><i class="fa fa-cog" style="color:var(--acc);margin-right:6px"></i>Configurações</div>
+      <div class="sheet-close" onclick="fechar('m-cfg')"><i class="fa fa-xmark"></i></div>
+    </div>
+    <div class="sheet-body">
+      <!-- Perfil -->
+      <div class="card">
+        <div class="card-hdr"><div class="card-icon" style="background:var(--acc-s);color:var(--acc)"><i class="fa fa-user-tie"></i></div><div><div class="card-title">Perfil</div></div></div>
+        <div class="card-body">
+          <div class="frow frow-2">
+            <div class="fgrp">
+              <div class="inp-lbl">Nome</div>
+              <input type="text" class="inp" id="cfg-nome" placeholder="Oficial de Justiça">
+            </div>
+            <div class="fgrp">
+              <div class="inp-lbl">Zona</div>
+              <input type="text" class="inp" id="cfg-zona" placeholder="Zona 07">
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Chaves -->
+      <div class="card">
+        <div class="card-hdr"><div class="card-icon" style="background:var(--acc-s);color:var(--acc)"><i class="fa fa-key"></i></div><div><div class="card-title">Chaves de API</div><div class="card-sub">Necessárias para usar IA e Maps</div></div></div>
+        <div class="card-body">
+          <!-- Claude -->
+          <div class="key-row" onclick="editarChave('claude')">
+            <div class="key-ico claude"><i class="fa fa-robot"></i></div>
+            <div class="key-info">
+              <div class="key-name">Claude (Anthropic)</div>
+              <div class="key-status" id="ks-claude"></div>
+            </div>
+            <div class="key-edit"><i class="fa fa-chevron-right"></i></div>
+          </div>
+          <!-- Gemini -->
+          <div class="key-row" onclick="editarChave('gemini')">
+            <div class="key-ico gemini"><i class="fa fa-gem"></i></div>
+            <div class="key-info">
+              <div class="key-name">Gemini (Google AI)</div>
+              <div class="key-status" id="ks-gemini"></div>
+            </div>
+            <div class="key-edit"><i class="fa fa-chevron-right"></i></div>
+          </div>
+          <!-- Maps -->
+          <div class="key-row" onclick="editarChave('maps')">
+            <div class="key-ico maps"><i class="fa fa-map-location-dot"></i></div>
+            <div class="key-info">
+              <div class="key-name">Google Maps</div>
+              <div class="key-status" id="ks-maps"></div>
+            </div>
+            <div class="key-edit"><i class="fa fa-chevron-right"></i></div>
+          </div>
+        </div>
+      </div>
+      <!-- Dados -->
+      <div class="card">
+        <div class="card-hdr"><div class="card-icon" style="background:var(--red-s);color:var(--red)"><i class="fa fa-database"></i></div><div><div class="card-title">Dados</div></div></div>
+        <div class="card-body">
+          <button class="btn btn-r btn-sm" onclick="limparDados()"><i class="fa fa-trash"></i> Apagar todos os dados</button>
+        </div>
+      </div>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn btn-primary btn-full" onclick="salvarConfig()"><i class="fa fa-floppy-disk"></i> Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     MODAL: EDITAR CHAVE
+════════════════════════════════ -->
+<div class="overlay" id="m-chave">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-hdr">
+      <div class="sheet-title" id="chave-title">Chave API</div>
+      <div class="sheet-close" onclick="fechar('m-chave')"><i class="fa fa-xmark"></i></div>
+    </div>
+    <div class="sheet-body">
+      <div id="chave-info" style="background:var(--green-50);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6"></div>
+      <div class="fgrp">
+        <div class="inp-lbl">Chave</div>
+        <input type="password" class="inp" id="chave-inp" placeholder="">
+      </div>
+      <div id="chave-status" style="font-size:11px;margin-top:6px"></div>
+    </div>
+    <div class="sheet-foot">
+      <div class="btn-row-equal">
+        <button class="btn btn-r" onclick="apagarChave()"><i class="fa fa-trash"></i> Apagar</button>
+        <button class="btn btn-primary" onclick="salvarChave()"><i class="fa fa-floppy-disk"></i> Salvar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ══════════════════════════════════════════
+   STORAGE — padrão do app referência
+   Cada dado no seu próprio localStorage key
+══════════════════════════════════════════ */
+const SK = {
+  claude:   'oj_claude_key',
+  gemini:   'oj_gemini_key',
+  maps:     'oj_maps_key',
+  mandados: 'oj_mandados',
+  hist:     'oj_historico',
+  config:   'oj_config',
+};
+
+function getKey(k)    { return localStorage.getItem(SK[k]) || '' }
+function setKey(k, v) { if(v) localStorage.setItem(SK[k], v); else localStorage.removeItem(SK[k]) }
+
+function getMandados()  { try{ return JSON.parse(localStorage.getItem(SK.mandados)||'[]') }catch{ return [] } }
+function setMandados(a) { localStorage.setItem(SK.mandados, JSON.stringify(a)) }
+function getHist()      { try{ return JSON.parse(localStorage.getItem(SK.hist)||'[]') }catch{ return [] } }
+function setHist(a)     { localStorage.setItem(SK.hist, JSON.stringify(a)) }
+function getCfg()       { try{ return JSON.parse(localStorage.getItem(SK.config)||'{}') }catch{ return {} } }
+function setCfg(o)      { localStorage.setItem(SK.config, JSON.stringify({...getCfg(),...o})) }
+
+/* ══════════════════════════════════════════
+   UTILITÁRIOS
+══════════════════════════════════════════ */
+function uid()  { return Date.now().toString(36) + Math.random().toString(36).slice(2,6) }
+function agora(){ return new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}) }
+
+function toast(msg, tipo='info', dur=3200) {
+  const icons = {ok:'fa-check',err:'fa-triangle-exclamation',warn:'fa-exclamation',info:'fa-circle-info'};
+  const t = document.createElement('div');
+  t.className = `toast ${tipo}`;
+  t.innerHTML = `<i class="fa ${icons[tipo]||'fa-circle-info'}"></i>${msg}`;
+  document.getElementById('toast-wrap').appendChild(t);
+  setTimeout(()=>t.remove(), dur);
+}
+
+/* ══════════════════════════════════════════
+   ANTHROPIC API — fetch direto (padrão referência)
+══════════════════════════════════════════ */
+async function callClaude(payload) {
+  const apiKey = getKey('claude');
+  if (!apiKey) { toast('Configure a chave Claude em ⚙ Config', 'warn'); return null; }
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify(payload)
+  });
+  if (!resp.ok) {
+    const e = await resp.json().catch(()=>({}));
+    const msg = e?.error?.message || ('Erro ' + resp.status);
+    if (resp.status === 401) throw new Error('Chave Claude inválida. Verifique em ⚙ Config.');
+    if (resp.status === 429) throw new Error('Limite de uso atingido. Aguarde e tente novamente.');
+    throw new Error(msg);
+  }
+  return await resp.json();
+}
+
+/* ══════════════════════════════════════════
+   GEMINI API — fetch direto
+══════════════════════════════════════════ */
+async function callGemini(prompt, imageParts) {
+  const apiKey = getKey('gemini');
+  if (!apiKey) { toast('Configure a chave Gemini em ⚙ Config', 'warn'); return null; }
+  const parts = imageParts ? [...imageParts, {text: prompt}] : [{text: prompt}];
+  const resp = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+    {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({contents:[{parts}]})
+    }
+  );
+  if (!resp.ok) {
+    const e = await resp.json().catch(()=>({}));
+    const msg = e?.error?.message || ('Erro Gemini ' + resp.status);
+    if (resp.status === 400 || resp.status === 403) throw new Error('Chave Gemini inválida. Verifique em ⚙ Config.');
+    throw new Error(msg);
+  }
+  const data = await resp.json();
+  return data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+}
+
+/* ══════════════════════════════════════════
+   NAVEGAÇÃO
+══════════════════════════════════════════ */
+function navTo(v) {
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  document.getElementById('nav-'+v).classList.add('active');
+  if(v==='home')      renderHome();
+  if(v==='mandados')  renderMandados();
+  if(v==='historico') renderHist();
+}
+
+/* ══════════════════════════════════════════
+   MODAIS
+══════════════════════════════════════════ */
+function abrir(id) {
+  const m = document.getElementById(id);
+  m.style.display = 'flex';
+  requestAnimationFrame(()=>m.classList.add('open'));
+}
+function fechar(id) {
+  const m = document.getElementById(id);
+  m.classList.remove('open');
+  setTimeout(()=>m.style.display='none', 240);
+}
+document.querySelectorAll('.overlay').forEach(m=>{
+  m.addEventListener('click', e=>{ if(e.target===m) fechar(m.id) });
+});
+
+/* ══════════════════════════════════════════
+   TABS (detalhe)
+══════════════════════════════════════════ */
+function setTab(idx, btn) {
+  const panes = ['tp-cump','tp-cert','tp-mais'];
+  panes.forEach((p,i)=>document.getElementById(p).classList.toggle('active',i===idx));
+  document.querySelectorAll('#det-tabs .tab-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));
+  moverSlider(idx);
+  if(idx===1) renderCertTab();
+  if(idx===2) renderMaisTab();
+}
+function moverSlider(idx) {
+  setTimeout(()=>{
+    const btns  = document.querySelectorAll('#det-tabs .tab-btn');
+    const slider= document.getElementById('tab-slider');
+    const wrap  = document.getElementById('det-tabs');
+    if(!slider||!btns[idx]||!wrap) return;
+    const r = btns[idx].getBoundingClientRect();
+    const w = wrap.getBoundingClientRect();
+    if(r.width===0) return;
+    slider.style.left  = (r.left - w.left + 4) + 'px';
+    slider.style.width = (r.width - 4) + 'px';
+  }, 310);
+}
+
+/* ══════════════════════════════════════════
+   ESTADO LOCAL
+══════════════════════════════════════════ */
+let mandadoAtivo = null;
+let filtroAtivo  = 'todos';
+let textoFiltro  = '';
+let novaModal    = 'eletronico';
+let modoExtracao = 'seguro';
+let imgB64 = null, imgMime = 'image/jpeg';
+let dadosRev = null;
+let atendHist = [];
+let iaHist = [];
+let iaMandCtx = null;
+
+/* ══════════════════════════════════════════
+   MODO SEGURO/PRODUTIVO
+══════════════════════════════════════════ */
+function setModo(modo) {
+  modoExtracao = modo;
+  document.getElementById('modo-seg').classList.toggle('sel', modo==='seguro');
+  document.getElementById('modo-prod').classList.toggle('sel', modo==='produtivo');
+  const b = document.getElementById('modo-banner');
+  if (modo==='seguro') {
+    b.className='modo-info info-seg';
+    b.innerHTML='<i class="fa fa-shield-halved"></i><span>IA extrai e apresenta para você <strong>revisar</strong> antes de preencher.</span>';
+  } else {
+    b.className='modo-info info-prod';
+    b.innerHTML='<i class="fa fa-bolt"></i><span>IA extrai e <strong>preenche automaticamente</strong> todos os campos.</span>';
+  }
+}
+function selMod(val, el) {
+  novaModal = val;
+  document.querySelectorAll('.sel-mod').forEach(b=>{
+    b.classList.remove('active');
+    b.className = b.className.replace('btn-g','btn-ghost');
+  });
+  el.classList.add('active');
+  el.className = el.className.replace('btn-ghost','btn-g');
+}
+
+/* ══════════════════════════════════════════
+   IMAGEM
+══════════════════════════════════════════ */
+function onImagem(inp) {
+  const file = inp.files[0]; if(!file) return;
+  if(file.size > 8*1024*1024) { toast('Imagem muito grande (máx 8 MB)','warn'); return; }
+  imgMime = file.type || 'image/jpeg';
+  const reader = new FileReader();
+  reader.onload = e => {
+    const du = e.target.result;
+    imgB64 = du.split(',')[1];
+    document.getElementById('img-prev').src = du;
+    document.getElementById('img-wrap').style.display = 'block';
+    document.getElementById('img-nome').style.display = 'block';
+    document.getElementById('img-nome').textContent = file.name + ' · ' + (file.size/1024).toFixed(0) + ' KB';
+    document.getElementById('btn-extrair').style.display = 'flex';
+    toast('Imagem carregada', 'info');
+  };
+  reader.readAsDataURL(file);
+  inp.value = '';
+}
+function limparImagem() {
+  imgB64 = null;
+  document.getElementById('img-wrap').style.display = 'none';
+  document.getElementById('img-nome').style.display = 'none';
+  document.getElementById('btn-extrair').style.display = 'none';
+}
+
+/* ══════════════════════════════════════════
+   EXTRAÇÃO IA (imagem) — usa Claude ou Gemini
+══════════════════════════════════════════ */
+// Parse robusto: extrai JSON mesmo com markdown residual ou texto ao redor
+function parseJSON(raw) {
+  // tenta direto
+  try { return JSON.parse(raw.trim()); } catch {}
+  // remove blocos markdown
+  let s = raw.replace(/^```json\s*/,'').replace(/^```\s*/,'').replace(/\s*```$/,'').trim();
+  try { return JSON.parse(s); } catch {}
+  // extrai primeiro objeto JSON encontrado
+  const m = s.match(/\{[\s\S]*\}/);
+  if (m) { try { return JSON.parse(m[0]); } catch {} }
+  throw new Error('IA não retornou JSON válido');
+}
+
+const PROMPT_EXTRACAO = `Você é um assistente jurídico especializado em mandados do TJMT. Analise esta imagem de mandado judicial.
+Retorne APENAS um objeto JSON puro, sem markdown, sem explicações, sem texto antes ou depois.
+Use string vazia "" para campos não encontrados. Exemplo de retorno esperado:
+{"processo":"0000000-00.0000.8.11.0001","tipo":"Citação","parte":"NOME DO RÉU","endereco":"Rua X, nº 00, Bairro, Cuiabá","telefone":"","whatsapp":"","obs":""}
+Mapeamento de tipo: citação→Citação, intimação→Intimação, penhora→Penhora, busca e apreensão→Busca e Apreensão, avaliação→Avaliação, outros→Outro.`;
+
+async function extrairImagem() {
+  if(!imgB64) { toast('Selecione uma imagem','warn'); return; }
+  const btn  = document.getElementById('btn-extrair');
+  const spin = document.getElementById('spin-extrair');
+  btn.disabled = true; spin.style.display = 'inline-block';
+  try {
+    let dados = null;
+    // Tenta Claude primeiro; se não tiver chave, tenta Gemini
+    if (getKey('claude')) {
+      const data = await callClaude({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 600,
+        messages:[{role:'user', content:[
+          {type:'image', source:{type:'base64', media_type:imgMime, data:imgB64}},
+          {type:'text', text: PROMPT_EXTRACAO}
+        ]}]
+      });
+      if(!data) throw new Error('Sem resposta');
+      const raw = (data.content?.[0]?.text||'').trim();
+      dados = parseJSON(raw);
+    } else if (getKey('gemini')) {
+      const texto = await callGemini(PROMPT_EXTRACAO, [
+        {inlineData:{mimeType:imgMime, data:imgB64}}
+      ]);
+      if(!texto) throw new Error('Sem resposta');
+      dados = parseJSON(texto);
+    } else {
+      toast('Configure a chave Claude ou Gemini em ⚙ Config','warn'); return;
+    }
+    if (!dados) throw new Error('IA retornou dados vazios');
+    if (modoExtracao === 'produtivo') {
+      aplicarDados(dados);
+      toast('⚡ Campos preenchidos automaticamente!', 'ok');
+    } else {
+      abrirRevisao(dados);
+    }
+    addHist({tipo:'ia', titulo:'Extração IA · '+modoExtracao, det:'Visão computacional'});
+  } catch(e) {
+    toast('Erro na extração: '+e.message.slice(0,55), 'err');
+    console.error('extrairImagem:', e);
+  } finally {
+    btn.disabled = false; spin.style.display = 'none';
+  }
+}
+
+function aplicarDados(d) {
+  if(d.processo) document.getElementById('f-proc').value  = d.processo;
+  if(d.tipo)     document.getElementById('f-tipo').value  = d.tipo;
+  if(d.parte)    document.getElementById('f-parte').value = d.parte;
+  if(d.endereco) document.getElementById('f-end').value   = d.endereco;
+  if(d.telefone) document.getElementById('f-tel').value   = d.telefone;
+  if(d.whatsapp) document.getElementById('f-wpp').value   = d.whatsapp;
+  if(d.obs)      document.getElementById('f-obs').value   = d.obs;
+  document.getElementById('novo-form').scrollIntoView({behavior:'smooth'});
+}
+
+/* ══════════════════════════════════════════
+   REVISÃO IA
+══════════════════════════════════════════ */
+function abrirRevisao(d) {
+  dadosRev = d;
+  const campos = [
+    {id:'rv-proc', lbl:'Processo', val:d.processo||''},
+    {id:'rv-tipo', lbl:'Tipo',     val:d.tipo||''},
+    {id:'rv-parte',lbl:'Parte',    val:d.parte||''},
+    {id:'rv-end',  lbl:'Endereço', val:d.endereco||''},
+    {id:'rv-tel',  lbl:'Telefone', val:d.telefone||''},
+    {id:'rv-wpp',  lbl:'WhatsApp', val:d.whatsapp||''},
+    {id:'rv-obs',  lbl:'Obs.',     val:d.obs||''},
+  ];
+  document.getElementById('rev-campos').innerHTML = campos.map(c=>`
+    <div class="fgrp">
+      <div class="inp-lbl">${c.lbl} ${c.val?'<span class="rev-badge">IA</span>':'<span style="color:var(--muted2);font-size:9px">não detectado</span>'}</div>
+      <input type="text" class="inp" id="${c.id}" value="${c.val.replace(/"/g,'&quot;')}" placeholder="Não detectado">
+    </div>`).join('');
+  fechar('m-novo');
+  setTimeout(()=>abrir('m-revisao'), 260);
+}
+function confirmarRevisao() {
+  const g = id => (document.getElementById(id)?.value||'').trim();
+  aplicarDados({
+    processo:g('rv-proc'), tipo:g('rv-tipo'), parte:g('rv-parte'),
+    endereco:g('rv-end'),  telefone:g('rv-tel'), whatsapp:g('rv-wpp'), obs:g('rv-obs')
+  });
+  fechar('m-revisao');
+  setTimeout(()=>abrir('m-novo'), 260);
+  toast('✓ Dados aplicados ao formulário', 'ok');
+}
+
+/* ══════════════════════════════════════════
+   NOVO MANDADO
+══════════════════════════════════════════ */
+function abrirNovoMandado() {
+  ['f-proc','f-parte','f-end','f-tel','f-wpp','f-obs'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-tipo').value='Citação';
+  limparImagem();
+  novaModal = 'eletronico';
+  document.getElementById('op-el').className='btn btn-g btn-sm sel-mod active';
+  document.getElementById('op-pr').className='btn btn-ghost btn-sm sel-mod';
+  abrir('m-novo');
+}
+function salvarMandado() {
+  const proc  = document.getElementById('f-proc').value.trim();
+  const parte = document.getElementById('f-parte').value.trim();
+  if(!proc||!parte) { toast('Processo e Parte são obrigatórios','warn'); return; }
+  const m = {
+    id: uid(), proc, parte,
+    tipo:      document.getElementById('f-tipo').value,
+    endereco:  document.getElementById('f-end').value.trim(),
+    telefone:  document.getElementById('f-tel').value.trim(),
+    whatsapp:  document.getElementById('f-wpp').value.trim(),
+    obs:       document.getElementById('f-obs').value.trim(),
+    modalidade:novaModal,
+    etapa:'aguardando', dtAguardando:agora(),
+    resultado:null, motivoNeg:null,
+    certidao:'', pje:false, pjeData:'',
+    atendLog:[], criadoEm:agora(), atualizadoEm:agora()
+  };
+  const arr = getMandados();
+  arr.unshift(m);
+  setMandados(arr);
+  addHist({tipo:'ok', titulo:'Mandado cadastrado', det:`${m.tipo} — ${m.parte}`, mid:m.id});
+  fechar('m-novo');
+  renderHome();
+  toast('Mandado salvo!', 'ok');
+}
+
+/* ══════════════════════════════════════════
+   FLUXO VISUAL
+══════════════════════════════════════════ */
+function calcEtapa(m) {
+  if(m.pje) return 3;
+  if(m.resultado==='positivo'||m.resultado==='negativo') return 2;
+  if(m.etapa==='em_cumprimento') return 2;
+  if(m.etapa==='aguardando') return 1;
+  return 0;
+}
+function renderFluxo(m) {
+  const etapa = calcEtapa(m);
+  const pct = [0,33,66,100][Math.min(etapa,3)];
+  const steps = [
+    {icon:'fa-file-circle-plus', lbl:'Início',       data:m.criadoEm||''},
+    {icon:'fa-clock',            lbl:'Aguardando',    data:m.dtAguardando||''},
+    {icon:'fa-person-walking',   lbl:'Cumprimento',   data:m.dtCumprindo||''},
+    {icon:'fa-flag-checkered',   lbl:'Finalizado',    data:m.pjeData||''},
+  ];
+  const stHtml = steps.map((s,i)=>{
+    let cls = 'fs-pend';
+    if(i < etapa) cls='fs-done';
+    else if(i===etapa) cls = (i===3&&etapa===3)?'fs-final':'fs-active';
+    if(etapa===3&&i===3) cls='fs-final';
+    const tick = i<etapa ? '<div class="fs-tick"><i class="fa fa-check"></i></div>':'' ;
+    return `<div class="fstep ${cls}" onclick="avancarEtapa(${i})">
+      <div class="fs-dot"><i class="fa ${s.icon}"></i>${tick}</div>
+      <div class="fs-lbl">${s.lbl}</div>
+      ${s.data?`<div class="fs-data">${s.data}</div>`:''}
+    </div>`;
+  }).join('');
+  const sInfo = [
+    {txt:'Cadastrado',       cor:'var(--green-600)', icon:'fa-file-circle-plus'},
+    {txt:'Aguardando',       cor:'var(--amber)',      icon:'fa-clock'},
+    {txt:'Em cumprimento',   cor:'#ea580c',           icon:'fa-person-walking'},
+    {txt:'Concluído · PJe',  cor:'var(--purple)',     icon:'fa-flag-checkered'},
+  ][etapa]||{txt:'Início',cor:'var(--green-600)',icon:'fa-file-circle-plus'};
+  return `<div class="fluxo">
+    <div class="fluxo-bar-bg"><div class="fluxo-bar-fill" style="width:${pct}%"></div></div>
+    <div class="fluxo-row">${stHtml}</div>
+    <div class="fluxo-status">
+      <div class="fluxo-status-txt" style="color:${sInfo.cor}"><i class="fa ${sInfo.icon}"></i>${sInfo.txt}</div>
+      <div class="fluxo-pct">${pct}%</div>
+    </div>
+  </div>`;
+}
+function avancarEtapa(idx) {
+  const arr = getMandados();
+  const m   = arr.find(x=>x.id===mandadoAtivo); if(!m) return;
+  const atual = calcEtapa(m);
+  if(idx<=atual) { toast('Etapa já concluída','info'); return; }
+  if(idx>atual+1){ toast('Conclua a etapa anterior primeiro','warn'); return; }
+  const nomes = ['Início','Aguardando','Em cumprimento','Finalizado'];
+  if(idx===1) { m.etapa='aguardando'; m.dtAguardando=agora() }
+  else if(idx===2) { m.etapa='em_cumprimento'; m.dtCumprindo=agora() }
+  else if(idx===3) {
+    if(!m.resultado) { toast('Registre o resultado primeiro','warn'); return; }
+    if(!m.certidao)  { toast('Gere a certidão antes de finalizar','warn'); return; }
+    m.pje=true; m.pjeData=agora();
+    toast('🎉 Mandado finalizado e juntado!','ok');
+  }
+  m.atualizadoEm = agora();
+  setMandados(arr);
+  addHist({tipo:idx===3?'cert':'ok', titulo:'Etapa: '+nomes[idx], det:m.proc, mid:m.id});
+  document.getElementById('det-fluxo').innerHTML = renderFluxo(m);
+  renderHome();
+  atualizarDetFoot(m);
+}
+
+/* ══════════════════════════════════════════
+   RENDER LISTAS
+══════════════════════════════════════════ */
+function etapaClass(m) {
+  if(m.pje||m.resultado==='positivo') return 'mc-ok';
+  if(m.resultado==='negativo') return 'mc-neg';
+  if(m.modalidade==='eletronico') return 'mc-el';
+  return 'mc-pr';
+}
+function pillEtapa(m) {
+  if(m.pje)                       return '<span class="pill pill-p"><i class="fa fa-gavel"></i>PJe</span>';
+  if(m.resultado==='positivo')    return '<span class="pill pill-g"><i class="fa fa-check"></i>Positivo</span>';
+  if(m.resultado==='negativo')    return '<span class="pill pill-r"><i class="fa fa-xmark"></i>Negativo</span>';
+  if(m.modalidade==='eletronico') return '<span class="pill pill-g"><i class="fa fa-mobile-screen"></i>Eletrônico</span>';
+  return '<span class="pill pill-a"><i class="fa fa-person-walking"></i>Presencial</span>';
+}
+function renderTrack(m) {
+  const e = calcEtapa(m);
+  const steps = [
+    {lbl:'Início',   cls: e>0?'s-done':'s-active', icon:'fa-check'},
+    {lbl:'Aguard.',  cls: e>1?'s-done':e===1?'s-active':''},
+    {lbl:'Cumprir',  cls: e>2?'s-done':e===2?'s-active':''},
+    {lbl:'PJe',      cls: m.pje?'s-pje':e===3?'s-active':''},
+  ];
+  return steps.map(s=>`
+    <div class="mstep ${s.cls}">
+      <div class="mdot">${s.cls==='s-done'?'<i class="fa fa-check"></i>':s.cls==='s-pje'?'<i class="fa fa-gavel"></i>':''}</div>
+      <div class="mlbl">${s.lbl}</div>
+    </div>`).join('');
+}
+function renderCard(m) {
+  return `<div class="mcard ${etapaClass(m)}" onclick="abrirDetalhe('${m.id}')">
+    <div class="mc-top">
+      <div class="mc-nome">${m.parte}</div>
+      <div class="mc-badges">${pillEtapa(m)}<span class="pill pill-gr" style="margin-top:2px">${m.tipo}</span></div>
+    </div>
+    <div class="mc-proc">${m.proc}</div>
+    ${m.endereco?`<div class="mc-end"><i class="fa fa-location-dot"></i>${m.endereco}</div>`:''}
+    <div class="mtrack">${renderTrack(m)}</div>
+  </div>`;
+}
+function renderHome() {
+  const arr = getMandados();
+  document.getElementById('st-total').textContent = arr.length;
+  document.getElementById('st-pend').textContent  = arr.filter(m=>!m.resultado&&!m.pje).length;
+  document.getElementById('st-ok').textContent    = arr.filter(m=>m.resultado==='positivo'||m.pje).length;
+  document.getElementById('st-pje').textContent   = arr.filter(m=>m.pje).length;
+  const rec = arr.slice(0,5);
+  const l=document.getElementById('home-list'), e=document.getElementById('home-empty');
+  if(!rec.length) { l.innerHTML=''; e.style.display='block'; }
+  else { e.style.display='none'; l.innerHTML=rec.map(renderCard).join(''); }
+  // topbar zona
+  const cfg = getCfg();
+  const zonaEl = document.getElementById('tb-zona');
+  if(zonaEl) zonaEl.textContent = (cfg.zona||'Zona 07') + ' · TJMT';
+}
+function filtrados() {
+  return getMandados().filter(m=>{
+    const q = textoFiltro.toLowerCase();
+    const mq = !q || m.parte.toLowerCase().includes(q) || m.proc.toLowerCase().includes(q) || (m.endereco||'').toLowerCase().includes(q);
+    let mf = true;
+    if(filtroAtivo==='pendente')    mf = !m.resultado&&!m.pje;
+    if(filtroAtivo==='eletronico')  mf = m.modalidade==='eletronico';
+    if(filtroAtivo==='presencial')  mf = m.modalidade==='presencial';
+    if(filtroAtivo==='concluido')   mf = m.resultado==='positivo'||m.pje;
+    if(filtroAtivo==='negativo')    mf = m.resultado==='negativo';
+    return mq&&mf;
+  });
+}
+function renderMandados() {
+  const items = filtrados();
+  const l=document.getElementById('mand-list'), e=document.getElementById('mand-empty');
+  if(!items.length) { l.innerHTML=''; e.style.display='block'; }
+  else { e.style.display='none'; l.innerHTML=items.map(renderCard).join(''); }
+}
+function filtrar()          { textoFiltro=document.getElementById('search-inp').value; renderMandados(); }
+function setFiltro(f, el)   { filtroAtivo=f; document.querySelectorAll('.fchip').forEach(c=>c.classList.remove('active')); el.classList.add('active'); renderMandados(); }
+
+/* ══════════════════════════════════════════
+   BUSCA IA
+══════════════════════════════════════════ */
+async function buscarIA() {
+  const q = document.getElementById('search-inp').value.trim();
+  if(!q) { toast('Digite o que buscar','warn'); return; }
+  toast('Buscando com IA…','info');
+  const arr = getMandados();
+  const lista = arr.map(m=>`ID:${m.id}|PARTE:${m.parte}|PROC:${m.proc}|TIPO:${m.tipo}`).join('\n');
+  try {
+    const data = await callClaude({
+      model:'claude-sonnet-4-6', max_tokens:200,
+      system:'Retorne IDs relevantes em JSON puro: {"ids":["id1"]}. Apenas JSON.',
+      messages:[{role:'user', content:`Mandados:\n${lista}\nConsulta: ${q}`}]
+    });
+    if(!data) return;
+    const {ids} = JSON.parse((data.content?.[0]?.text||'').replace(/```json|```/g,'').trim());
+    const enc = arr.filter(m=>ids.includes(m.id));
+    const l=document.getElementById('mand-list'), e=document.getElementById('mand-empty');
+    if(!enc.length) { l.innerHTML=''; e.style.display='block'; }
+    else { e.style.display='none'; l.innerHTML=enc.map(renderCard).join(''); }
+    toast(`IA encontrou ${enc.length} resultado(s)`,'ok');
+  } catch(e) { toast('Erro busca IA: '+e.message.slice(0,40),'err'); }
+}
+
+/* ══════════════════════════════════════════
+   DETALHE MANDADO
+══════════════════════════════════════════ */
+function abrirDetalhe(id) {
+  mandadoAtivo = id;
+  atendHist    = [];
+  const arr = getMandados();
+  const m   = arr.find(x=>x.id===id); if(!m) return;
+
+  document.getElementById('det-nome').textContent = m.parte;
+  document.getElementById('det-proc').textContent = m.proc + ' · ' + m.tipo;
+  document.getElementById('det-fluxo').innerHTML  = renderFluxo(m);
+
+  // pill modalidade
+  const mp = document.getElementById('det-mod-pill');
+  const isEl = m.modalidade==='eletronico';
+  mp.className = isEl ? 'pill pill-g' : 'pill pill-a';
+  mp.style.cssText = 'font-size:10px;padding:4px 10px;cursor:pointer;border:none';
+  mp.innerHTML = isEl ? '<i class="fa fa-mobile-screen"></i> Eletrônico' : '<i class="fa fa-person-walking"></i> Presencial';
+
+  // resultado
+  const rd = document.getElementById('det-res');
+  if(m.resultado) {
+    const isP = m.resultado==='positivo';
+    rd.style.display='block';
+    rd.innerHTML=`<div class="res-badge ${isP?'res-pos':'res-neg'}"><i class="fa ${isP?'fa-circle-check':'fa-circle-xmark'}"></i>Resultado: ${isP?'Positivo — Cumprido':'Negativo'}</div>`;
+  } else { rd.style.display='none'; }
+
+  // certidão (pré-carregar)
+  document.getElementById('cert-txt').value   = m.certidao||'';
+  document.getElementById('cert-txt').readOnly= true;
+  document.getElementById('cert-edit-bar').style.display='none';
+  const pjeOk = document.getElementById('pje-ok');
+  if(pjeOk) pjeOk.style.display = m.pje ? 'block':'none';
+  if(m.pje&&m.pjeData) document.getElementById('pje-data').textContent=m.pjeData;
+
+  // tabs
+  setTab(0, document.querySelector('#det-tabs .tab-btn'));
+
+  // foot
+  atualizarDetFoot(m);
+
+  // chat atendimento
+  if(!m.resultado) iniciarAtendimento(m);
+  else {
+    const box = document.getElementById('atend-msgs');
+    box.innerHTML='';
+    appendAtend('bot','Atendimento concluído. Resultado: '+m.resultado+'.'+(m.certidao?' Certidão gerada.':' Certidão não gerada.'));
+    document.getElementById('atend-opts').innerHTML='';
+  }
+
+  document.getElementById('btn-gerar-cert').style.display = m.resultado?'inline-flex':'none';
+  abrir('m-det');
+}
+
+function atualizarDetFoot(m) {
+  const foot = document.getElementById('det-foot');
+  if(m.pje) { foot.style.display='none'; return; }
+  if(m.resultado && m.certidao) {
+    foot.style.display='block';
+  } else {
+    foot.style.display='none';
+  }
+}
+
+function renderCertTab() {
+  const arr = getMandados();
+  const m   = arr.find(x=>x.id===mandadoAtivo); if(!m) return;
+  document.getElementById('cert-vazia').style.display    = m.certidao?'none':'block';
+  document.getElementById('cert-content').style.display  = m.certidao?'block':'none';
+}
+
+function renderMaisTab() {
+  const arr  = getMandados();
+  const m    = arr.find(x=>x.id===mandadoAtivo); if(!m) return;
+  const hist = getHist().filter(h=>h.mid===m.id);
+  document.getElementById('det-hist').innerHTML = hist.length
+    ? hist.map(renderTlItem).join('')
+    : '<div class="empty"><i class="fa fa-clock-rotate-left"></i><p>Sem ações ainda.</p></div>';
+}
+
+function trocarMod() {
+  const arr = getMandados();
+  const m   = arr.find(x=>x.id===mandadoAtivo); if(!m) return;
+  m.modalidade = m.modalidade==='eletronico'?'presencial':'eletronico';
+  m.atualizadoEm = agora();
+  setMandados(arr);
+  fechar('m-det');
+  setTimeout(()=>abrirDetalhe(mandadoAtivo), 260);
+  toast('Modalidade: '+m.modalidade, 'info');
+}
+
+function confirmarExcluir() {
+  if(!confirm('Excluir este mandado? Esta ação não pode ser desfeita.')) return;
+  const arr = getMandados().filter(m=>m.id!==mandadoAtivo);
+  setMandados(arr);
+  fechar('m-det');
+  renderHome(); renderMandados();
+  toast('Mandado excluído','warn');
+}
+
+function marcarPJe() {
+  const arr = getMandados();
+  const m   = arr.find(x=>x.id===mandadoAtivo); if(!m) return;
+  if(!m.resultado) { toast('Registre o resultado primeiro','warn'); return; }
+  if(!m.certidao)  { toast('Gere a certidão antes de finalizar','warn'); return; }
+  m.pje=true; m.pjeData=agora(); m.atualizadoEm=agora();
+  setMandados(arr);
+  document.getElementById('det-fluxo').innerHTML=renderFluxo(m);
+  document.getElementById('det-foot').style.display='none';
+  addHist({tipo:'cert',titulo:'Juntado no PJe',det:m.proc,mid:m.id});
+  renderHome();
+  toast('🎉 Finalizado e juntado no PJe!','ok');
+}
+
+/* ══════════════════════════════════════════
+   CERTIDÃO
+══════════════════════════════════════════ */
+async function gerarCertidao() {
+  const arr = getMandados();
+  const m   = arr.find(x=>x.id===mandadoAtivo); if(!m) return;
+  const btn  = document.getElementById('btn-gerar-cert');
+  const spin = document.getElementById('spin-cert');
+  btn.disabled=true; spin.style.display='inline-block';
+  const sys = `Você é um assistente para Oficial de Justiça do TJMT. Redija certidões judiciais formais, claras e completas em português, na primeira pessoa do Oficial, sem saudações ou explicações.`;
+  const prompt = `Redija a certidão de cumprimento de mandado com os dados abaixo:
+Processo: ${m.proc}
+Tipo: ${m.tipo}
+Parte/Réu: ${m.parte}
+Endereço: ${m.endereco||'não informado'}
+Resultado: ${m.resultado==='positivo'?'Positivo — cumprido com êxito':'Negativo — não cumprido'}
+${m.motivoNeg?'Motivo negativo: '+m.motivoNeg:''}
+Observações: ${m.obs||'nenhuma'}
+Oficial: ${getCfg().nome||'Oficial de Justiça'}, ${getCfg().zona||'Zona 07'}, Cuiabá/MT.
+Redija a certidão completa conforme o padrão do TJMT.`;
+  try {
+    const data = await callClaude({model:'claude-sonnet-4-6',max_tokens:800,system:sys,messages:[{role:'user',content:prompt}]});
+    if(!data) throw new Error('Sem resposta');
+    const cert = (data.content?.[0]?.text||'').trim();
+    if(!cert) throw new Error('IA retornou certidão vazia');
+    const arr2 = getMandados();
+    const m2   = arr2.find(x=>x.id===mandadoAtivo);
+    if(m2) { m2.certidao=cert; m2.atualizadoEm=agora(); setMandados(arr2); }
+    document.getElementById('cert-txt').value=cert;
+    renderCertTab();
+    atualizarDetFoot(m2||m);
+    document.getElementById('btn-gerar-cert').style.display='none';
+    addHist({tipo:'cert',titulo:'Certidão gerada por IA',det:m.tipo,mid:m.id});
+    toast('Certidão gerada! Revise antes de finalizar.','ok');
+  } catch(e) { toast('Erro ao gerar certidão: '+e.message.slice(0,50),'err'); }
+  finally { btn.disabled=false; spin.style.display='none'; }
+}
+function editarCert() {
+  document.getElementById('cert-txt').readOnly=false;
+  document.getElementById('cert-edit-bar').style.display='flex';
+  document.getElementById('cert-txt').focus();
+}
+function salvarCert() {
+  const arr = getMandados();
+  const m   = arr.find(x=>x.id===mandadoAtivo); if(!m) return;
+  m.certidao=document.getElementById('cert-txt').value; m.atualizadoEm=agora();
+  setMandados(arr);
+  document.getElementById('cert-txt').readOnly=true;
+  document.getElementById('cert-edit-bar').style.display='none';
+  atualizarDetFoot(m);
+  toast('Certidão salva','ok');
+}
+function cancelarEditCert() {
+  const arr = getMandados();
+  const m   = arr.find(x=>x.id===mandadoAtivo); if(!m) return;
+  document.getElementById('cert-txt').value=m.certidao||'';
+  document.getElementById('cert-txt').readOnly=true;
+  document.getElementById('cert-edit-bar').style.display='none';
+}
+async function copiarCert() {
+  const txt=document.getElementById('cert-txt').value;
+  if(!txt){ toast('Nenhuma certidão para copiar','warn'); return; }
+  try { await navigator.clipboard.writeText(txt); }
+  catch { const t=document.createElement('textarea'); t.value=txt; t.style.position='fixed'; t.style.opacity='0'; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
+  toast('Certidão copiada!','ok');
+}
+
+/* ══════════════════════════════════════════
+   ASSISTENTE DE ATENDIMENTO
+══════════════════════════════════════════ */
+function iniciarAtendimento(m) {
+  const box=document.getElementById('atend-msgs');
+  box.innerHTML=''; atendHist=[];
+  const isEl=m.modalidade==='eletronico';
+  const intro=isEl
+    ?`Vou orientar o atendimento eletrônico.\nMandado: **${m.tipo}** para **${m.parte}**.\nComo foi a tentativa de contato?`
+    :`Orientando a diligência presencial.\nMandado: **${m.tipo}** — **${m.parte}**.\nEndereço: ${m.endereco||'não informado'}.\nQual foi o resultado da diligência?`;
+  const optsEl=['✅ Citado — respondeu','📄 Enviou documento','❌ Não atendeu','🚫 Recusou receber','📵 Número inválido'];
+  const optsPr=['✅ Cumprido — encontrado','🚪 Ausente','🏠 Mudou-se','🚫 Recusou receber','❓ Endereço não encontrado'];
+  appendAtend('bot',intro);
+  atendHist.push({role:'user',content:'Iniciar atendimento.'},{role:'assistant',content:intro});
+  mostrarOpts(isEl?optsEl:optsPr);
+}
+function appendAtend(role, txt, isTyping=false) {
+  const box=document.getElementById('atend-msgs');
+  const id=uid();
+  const isBot=role==='bot';
+  const av=isBot?'<div class="cav bot" style="width:24px;height:24px;font-size:10px"><i class="fa fa-comments"></i></div>':'<div class="cav user" style="width:24px;height:24px;font-size:10px"><i class="fa fa-user"></i></div>';
+  const bub=isBot?'cbubble bot':'cbubble user';
+  box.innerHTML+=`<div class="cmsg ${role}" style="padding:6px 8px 0"><div class="chat-box" style="gap:6px;display:flex;${isBot?'':'flex-direction:row-reverse'};align-items:flex-start">${av}<div class="${bub}" style="font-size:12px;padding:8px 11px" id="b${id}">${isTyping?'<div class="typing-dot"><span></span><span></span><span></span></div>':(txt||'')}</div></div></div>`;
+  box.scrollTop=box.scrollHeight; return id;
+}
+function mostrarOpts(opts) {
+  const el=document.getElementById('atend-opts');
+  if(!opts||!opts.length){ el.innerHTML=''; return; }
+  el.innerHTML=opts.map(o=>`<button class="opt-chip" onclick="selOpt(this,'${o.replace(/'/g,"\\\'")}')">${o}</button>`).join('');
+}
+function selOpt(el, txt) {
+  document.querySelectorAll('#atend-opts .opt-chip').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  setTimeout(()=>processarAtend(txt),150);
+}
+async function enviarAtend() {
+  const inp=document.getElementById('atend-inp');
+  const msg=inp.value.trim(); if(!msg) return;
+  inp.value=''; processarAtend(msg);
+}
+async function processarAtend(input) {
+  const arr=getMandados(); const m=arr.find(x=>x.id===mandadoAtivo); if(!m) return;
+  appendAtend('user',input);
+  atendHist.push({role:'user',content:input});
+  mostrarOpts([]);
+  const tid=appendAtend('bot',null,true);
+  document.getElementById('atend-send').disabled=true;
+  const sys=`Você é o assistente de campo do Oficial de Justiça ${getCfg().nome||'Oficial'}, ${getCfg().zona||'Zona 07'} TJMT.
+Mandado: ${m.tipo} · ${m.parte} · ${m.proc} · ${m.modalidade}
+Endereço: ${m.endereco||'—'} · Tel: ${m.telefone||'—'}
+Oriente o cumprimento do mandado. Ao final do atendimento sugira o registro do resultado (positivo ou negativo) e ofereça gerar a certidão.
+Seja objetivo, prático. Quando o resultado for definido, responda com: RESULTADO:positivo ou RESULTADO:negativo e motivo se negativo.`;
+  try {
+    const data=await callClaude({model:'claude-sonnet-4-6',max_tokens:500,system:sys,messages:atendHist.slice(-8)});
+    if(!data) throw new Error('Sem resposta');
+    let reply=(data.content?.[0]?.text||'').trim();
+    // detectar resultado na resposta
+    const resMatch=reply.match(/RESULTADO:(positivo|negativo)(?:\s*[·\-]?\s*(.+))?/i);
+    if(resMatch) {
+      const res=resMatch[1].toLowerCase();
+      const motivo=resMatch[2]||'';
+      reply=reply.replace(/RESULTADO:(positivo|negativo)[^\n]*/i,'').trim();
+      const arr2=getMandados(); const m2=arr2.find(x=>x.id===mandadoAtivo);
+      if(m2){ m2.resultado=res; if(motivo)m2.motivoNeg=motivo; m2.atualizadoEm=agora(); setMandados(arr2); }
+      addHist({tipo:res==='positivo'?'ok':'neg',titulo:'Resultado: '+res,det:m.proc,mid:m.id});
+      const rd=document.getElementById('det-res');
+      const isP=res==='positivo';
+      rd.style.display='block';
+      rd.innerHTML=`<div class="res-badge ${isP?'res-pos':'res-neg'}"><i class="fa ${isP?'fa-circle-check':'fa-circle-xmark'}"></i>Resultado: ${isP?'Positivo — Cumprido':'Negativo'}${motivo?' ('+motivo+')':''}</div>`;
+      document.getElementById('det-fluxo').innerHTML=renderFluxo(m2||m);
+      document.getElementById('btn-gerar-cert').style.display='inline-flex';
+      atualizarDetFoot(m2||m);
+      renderHome();
+    }
+    const bEl=document.getElementById('b'+tid);
+    if(bEl) bEl.innerHTML=reply||'...';
+    atendHist.push({role:'assistant',content:reply});
+    if(m.atendLog) { m.atendLog.push({role:'assistant',text:reply,ts:agora()}); }
+    // sugerir opções contextuais
+    if(reply.toLowerCase().includes('negativo')) mostrarOpts(['📝 Registrar negativo','🔄 Tentar novamente']);
+    else if(reply.toLowerCase().includes('certidão')) mostrarOpts(['📜 Gerar certidão agora']);
+  } catch(e) {
+    const bEl=document.getElementById('b'+tid);
+    if(bEl) bEl.textContent='Erro: '+e.message.slice(0,50);
+  }
+  document.getElementById('atend-send').disabled=false;
+}
+
+/* ══════════════════════════════════════════
+   ASSISTENTE IA GERAL
+══════════════════════════════════════════ */
+function setCtxIA(m) {
+  iaMandCtx=m;
+  const ctx=document.getElementById('ia-ctx');
+  if(m&&ctx) {
+    document.getElementById('ia-ctx-nome').textContent=m.parte;
+    document.getElementById('ia-ctx-proc').textContent=m.proc+' · '+m.tipo;
+    ctx.style.display='block';
+  } else if(ctx) { ctx.style.display='none'; }
+}
+function limparCtxIA() { setCtxIA(null); iaHist=[]; toast('Contexto removido','info'); }
+function abrirIAComMandado() {
+  const arr=getMandados(); const m=arr.find(x=>x.id===mandadoAtivo); if(!m){ toast('Nenhum mandado aberto','warn'); return; }
+  fechar('m-det'); setCtxIA(m); iaHist=[];
+  const box=document.getElementById('ia-msgs');
+  box.innerHTML=`<div class="cmsg"><div class="cav bot"><i class="fa fa-comments"></i></div><div class="cbubble bot">Contexto carregado: <strong>${m.parte}</strong><br><span style="font-size:11px;color:var(--muted)">${m.proc} · ${m.tipo}</span><br><br>Use os atalhos ou pergunte qualquer coisa sobre este mandado.</div></div>`;
+  setTimeout(()=>navTo('ia'),260);
+}
+const ATALHOS_IA={
+  resumo:'Faça um resumo objetivo deste mandado: situação atual, etapa, dados e próximos passos.',
+  estrategia:'Sugira a melhor estratégia de cumprimento: horário ideal, abordagem, pontos de atenção.',
+  wpp:'Redija uma mensagem WhatsApp profissional para intimar/citar esta parte.',
+  certidao:'Sugira o texto de uma certidão completa para este mandado.',
+  pendencias:'Liste todas as pendências deste mandado em ordem de prioridade.',
+};
+function atalhoIA(tipo) {
+  const msg=ATALHOS_IA[tipo]; if(!msg) return;
+  document.getElementById('ia-inp').value=msg;
+  enviarIA();
+}
+function addMsgIA(box,role,txt,typing=false) {
+  const id=uid(); const isBot=role==='bot';
+  const av=isBot?'<div class="cav bot"><i class="fa fa-comments"></i></div>':'<div class="cav user"><i class="fa fa-user"></i></div>';
+  box.innerHTML+=`<div class="cmsg ${role?'':'user'}" style="${!isBot?'flex-direction:row-reverse':''}">
+    ${av}<div class="cbubble ${isBot?'bot':'user'}" id="b${id}">${typing?'<div class="typing-dot"><span></span><span></span><span></span></div>':(txt||'')}</div></div>`;
+  box.scrollTop=box.scrollHeight; return id;
+}
+async function enviarIA() {
+  const inp=document.getElementById('ia-inp');
+  const msg=inp.value.trim(); if(!msg) return; inp.value='';
+  const box=document.getElementById('ia-msgs');
+  addMsgIA(box,'user',msg);
+  iaHist.push({role:'user',content:msg});
+  const tid=addMsgIA(box,'bot',null,true);
+  document.getElementById('ia-send').disabled=true;
+  const ctxTxt=iaMandCtx?`\n\n=== MANDADO ===\nProcesso: ${iaMandCtx.proc}\nTipo: ${iaMandCtx.tipo}\nParte: ${iaMandCtx.parte}\nEndereço: ${iaMandCtx.endereco||'—'}\nEtapa: ${iaMandCtx.etapa||'—'}\nResultado: ${iaMandCtx.resultado||'não registrado'}\nCertidão: ${iaMandCtx.certidao?'Sim':'Não'}\n===============`:'';
+  const sys=`Você é o assistente IA do OJ Mandados (${getCfg().zona||'Zona 07'}), Oficial: ${getCfg().nome||'Oficial'}. Ajude com mandados, certidões, legislação processual e WhatsApp. Seja objetivo e prático.${ctxTxt}`;
+  try {
+    const data=await callClaude({model:'claude-sonnet-4-6',max_tokens:800,system:sys,messages:iaHist.slice(-10)});
+    if(!data) throw new Error('Sem resposta');
+    const reply=(data.content?.[0]?.text||'').trim();
+    const bEl=document.getElementById('b'+tid); if(bEl) bEl.innerHTML=reply;
+    iaHist.push({role:'assistant',content:reply});
+    if(iaMandCtx) addHist({tipo:'ia',titulo:'Análise IA',det:msg.slice(0,50),mid:iaMandCtx.id});
+  } catch(e) {
+    const bEl=document.getElementById('b'+tid); if(bEl) bEl.textContent='Erro: '+e.message.slice(0,55);
+  }
+  document.getElementById('ia-send').disabled=false;
+}
+
+/* ══════════════════════════════════════════
+   MAPS & WHATSAPP
+══════════════════════════════════════════ */
+function abrirMaps() {
+  const arr=getMandados(); const m=arr.find(x=>x.id===mandadoAtivo); if(!m||!m.endereco){ toast('Endereço não informado','warn'); return; }
+  window.open(`https://maps.google.com/?q=${encodeURIComponent(m.endereco+', Cuiabá, MT')}`, '_blank');
+}
+function abrirWhatsApp() {
+  const arr=getMandados(); const m=arr.find(x=>x.id===mandadoAtivo); if(!m){ return; }
+  const num=(m.whatsapp||m.telefone).replace(/\D/g,'');
+  if(!num){ toast('Número não informado','warn'); return; }
+  const txt=`Olá ${m.parte}, sou Oficial de Justiça do TJMT (${getCfg().zona||'Zona 07'}). Este contato refere-se ao processo nº ${m.proc}. Por favor, entre em contato para tratar deste mandado.`;
+  window.open(`https://wa.me/55${num}?text=${encodeURIComponent(txt)}`,'_blank');
+}
+
+/* ══════════════════════════════════════════
+   HISTÓRICO
+══════════════════════════════════════════ */
+const TL_ICONS={ok:'fa-check',neg:'fa-xmark',warn:'fa-exclamation',cert:'fa-scroll',wpp:'fa-whatsapp fab',ia:'fa-robot'};
+function addHist(item) {
+  const arr=getHist();
+  arr.unshift({...item,ts:agora(),id:uid()});
+  setHist(arr.slice(0,200));
+}
+function renderTlItem(h) {
+  const tipo=h.tipo||'ia';
+  return `<div class="tl-item"><div class="tl-dot ${tipo}"><i class="${TL_ICONS[tipo]?.startsWith('fab')?'':'fa'} ${(TL_ICONS[tipo]||'fa-circle-info').replace('fab ','')}"></i></div>
+    <div class="tl-card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px"><div class="tl-titulo">${h.titulo||''}</div><div class="tl-hora">${h.ts||''}</div></div>${h.det?`<div class="tl-det">${h.det}</div>`:''}</div></div>`;
+}
+function renderHist() {
+  const arr=getHist();
+  const l=document.getElementById('hist-list'),e=document.getElementById('hist-empty');
+  if(!arr.length){ l.innerHTML=''; e.style.display='block'; return; }
+  e.style.display='none'; l.innerHTML=arr.map(renderTlItem).join('');
+}
+
+/* ══════════════════════════════════════════
+   CONFIGURAÇÕES
+══════════════════════════════════════════ */
+let chaveAtual=null; // 'claude'|'gemini'|'maps'
+const CHAVE_INFO={
+  claude:{
+    title:'Chave Claude (Anthropic)',
+    placeholder:'sk-ant-…',
+    info:'Usada para extração de imagem, assistente IA, geração de certidão e busca inteligente.<br>Obtenha em: <strong>console.anthropic.com</strong>',
+    prefix:'sk-'
+  },
+  gemini:{
+    title:'Chave Gemini (Google AI)',
+    placeholder:'AIza…',
+    info:'Alternativa ao Claude para extração de imagem por IA.<br>Obtenha em: <strong>aistudio.google.com</strong>',
+    prefix:'AIza'
+  },
+  maps:{
+    title:'Chave Google Maps',
+    placeholder:'AIza…',
+    info:'Usada para abrir rotas e localizar endereços no mapa.<br>Obtenha em: <strong>console.cloud.google.com</strong>',
+    prefix:'AIza'
+  },
+};
+function abrirConfig() {
+  const cfg=getCfg();
+  document.getElementById('cfg-nome').value=cfg.nome||'';
+  document.getElementById('cfg-zona').value=cfg.zona||'';
+  atualizarKeyStatus();
+  abrir('m-cfg');
+}
+function atualizarKeyStatus() {
+  const keys={claude:'ks-claude',gemini:'ks-gemini',maps:'ks-maps'};
+  Object.entries(keys).forEach(([k,elId])=>{
+    const el=document.getElementById(elId); if(!el) return;
+    const val=getKey(k);
+    el.className='key-status '+(val?'ok':'no');
+    el.innerHTML=val?'<i class="fa fa-circle-check"></i> Configurada':'<i class="fa fa-circle-xmark"></i> Não configurada';
+  });
+}
+function editarChave(k) {
+  chaveAtual=k;
+  const info=CHAVE_INFO[k];
+  document.getElementById('chave-title').textContent=info.title;
+  document.getElementById('chave-info').innerHTML=info.info;
+  document.getElementById('chave-inp').placeholder=info.placeholder;
+  const val=getKey(k);
+  document.getElementById('chave-inp').value=val?val.slice(0,8)+'…':'';
+  document.getElementById('chave-inp').value='';
+  const st=document.getElementById('chave-status');
+  st.innerHTML=val?`<span style="color:var(--green-600)"><i class="fa fa-circle-check"></i> Chave configurada (${val.slice(0,8)}…)</span>`:'<span style="color:var(--muted)">Nenhuma chave salva.</span>';
+  fechar('m-cfg');
+  setTimeout(()=>abrir('m-chave'),260);
+}
+function salvarChave() {
+  if(!chaveAtual) return;
+  const v=document.getElementById('chave-inp').value.trim();
+  if(!v) { toast('Digite a chave','warn'); return; }
+  const info=CHAVE_INFO[chaveAtual];
+  // validação básica apenas para Claude
+  if(chaveAtual==='claude'&&!v.startsWith('sk-')) { toast('Chave Claude deve começar com sk-','err'); return; }
+  setKey(chaveAtual, v);
+  atualizarKeyStatus();
+  fechar('m-chave');
+  setTimeout(()=>abrir('m-cfg'),260);
+  toast('Chave salva!','ok');
+}
+function apagarChave() {
+  if(!chaveAtual) return;
+  if(!confirm('Apagar esta chave?')) return;
+  setKey(chaveAtual, '');
+  atualizarKeyStatus();
+  fechar('m-chave');
+  setTimeout(()=>abrir('m-cfg'),260);
+  toast('Chave apagada','warn');
+}
+function salvarConfig() {
+  setCfg({
+    nome: document.getElementById('cfg-nome').value.trim()||'Oficial de Justiça',
+    zona: document.getElementById('cfg-zona').value.trim()||'Zona 07',
+  });
+  fechar('m-cfg');
+  renderHome();
+  toast('Configurações salvas!','ok');
+}
+function limparDados() {
+  if(!confirm('Apagar TODOS os mandados e histórico? Esta ação não pode ser desfeita.')) return;
+  setMandados([]); setHist([]);
+  renderHome(); renderMandados(); renderHist();
+  toast('Dados apagados','warn');
+}
+
+/* ══════════════════════════════════════════
+   INIT
+══════════════════════════════════════════ */
+renderHome();
+</script>
+</body>
+</html>
